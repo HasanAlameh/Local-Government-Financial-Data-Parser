@@ -91,6 +91,21 @@ def page_scan(file):
                 elif len(fullPagetext) > 2 and fullPagetext[1] == 'Required Supplementary Information' and fullPagetext[2] == 'Municipal Employees\' Retirement System of Michigan':
                     requiredSuppInfoMunicipalEmpRetSysPages.append(i)
 
+def cleanSpecialChars(index):
+	#Replace or remove special chars "(", ")", and "$"; only keeping numbers
+	fullPagetext[index] = fullPagetext[index].replace("$", "")
+	fullPagetext[index] = fullPagetext[index].replace("-", "0")
+	fullPagetext[index] = fullPagetext[index].replace("(", "-")
+	fullPagetext[index] = fullPagetext[index].replace(")", "")
+	
+def storeInList(list, date, county, header, pgHeader, row):
+	#Store data into a list
+	list.append(date)
+	list.append(county)
+	list.append(header)
+	list.append(pgHeader)
+	list.append(row)
+					
 def file_parse(file):
     page_scan(file)
     with pdfplumber.open(file) as pdf:
@@ -171,10 +186,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+								cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -185,10 +197,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0] + " - ASSETS"
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+								cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -203,10 +212,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -217,10 +223,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0] + " - ASSETS"
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -235,10 +238,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -249,10 +249,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0] + " - ASSETS"
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -267,10 +264,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -281,10 +275,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0] + " - ASSETS"
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -300,10 +291,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -315,10 +303,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+2] = fullPagetext[lineIndex+2].replace(nextNextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+2] = fullPagetext[lineIndex+2].replace("$", "")
-                                fullPagetext[lineIndex+2] = fullPagetext[lineIndex+2].replace("-", "0")
-                                fullPagetext[lineIndex+2] = fullPagetext[lineIndex+2].replace("(", "-")
-                                fullPagetext[lineIndex+2] = fullPagetext[lineIndex+2].replace(")", "")
+                                cleanSpecialChars(lineIndex+2)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+2].split()
                                 #Store data into a list
@@ -333,10 +318,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -347,10 +329,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0] + " (noncurrent due in one year) - LIABILITIES"
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -365,10 +344,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -379,10 +355,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -397,10 +370,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -411,10 +381,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -429,10 +396,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -443,10 +407,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0] + " " + "- NET POSITION"
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -461,10 +422,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -475,10 +433,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0] + " " + "- NET POSITION"
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -493,10 +448,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -507,10 +459,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -571,10 +520,7 @@ def file_parse(file):
                             fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine, "")
 
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                            cleanSpecialChars(lineIndex+1)
 
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex+1].split()
@@ -585,10 +531,7 @@ def file_parse(file):
                         else:
                             pageHeader = fullPagetext[lineIndex].split("   ")[0]
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(nextLine, "")
@@ -608,10 +551,7 @@ def file_parse(file):
                             fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine, "")
 
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                            cleanSpecialChars(lineIndex+1)
 
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex+1].split()
@@ -622,10 +562,7 @@ def file_parse(file):
                         else:
                             pageHeader = fullPagetext[lineIndex].split("   ")[0]
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(nextLine, "")
@@ -645,10 +582,7 @@ def file_parse(file):
                             fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine, "")
 
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                            cleanSpecialChars(lineIndex+1)
 
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex+1].split()
@@ -659,10 +593,7 @@ def file_parse(file):
                         else:
                             pageHeader = fullPagetext[lineIndex].split("   ")[0]
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(nextLine, "")
@@ -733,10 +664,7 @@ def file_parse(file):
                             #get rid of the subheader (Ex: Property Tax and only keep numericals)
                             fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine, "")
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                            cleanSpecialChars(lineIndex+1)
 
                             #Split numerical data by , based on space space
                             row = fullPagetext[lineIndex+1].split()
@@ -745,10 +673,7 @@ def file_parse(file):
                         else:
                             pageHeader = fullPagetext[lineIndex].split("   ")[0]
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             row = fullPagetext[lineIndex].split()
 
                             FINAL_PAGE_DATA.append(dfLine(date, county, header, pageHeader, row[len(row) - 4], row[len(row) - 3], row[len(row) - 2]))
@@ -761,10 +686,7 @@ def file_parse(file):
                             pageHeader = fullPagetext[lineIndex].split("   ")[0] + " " + nextLine
                             fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine, "")
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                            cleanSpecialChars(lineIndex+1)
 
                             row = fullPagetext[lineIndex+1].split()
 
@@ -773,10 +695,7 @@ def file_parse(file):
                         else:
                             pageHeader = fullPagetext[lineIndex].split("   ")[0]
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
 
                             row = fullPagetext[lineIndex].split()
 
@@ -790,10 +709,7 @@ def file_parse(file):
                             pageHeader = fullPagetext[lineIndex].split("   ")[0] + " " + nextLine
                             fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine, "")
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                            cleanSpecialChars(lineIndex+1)
 
                             row = fullPagetext[lineIndex+1].split()
 
@@ -802,10 +718,7 @@ def file_parse(file):
                         else:
                             pageHeader = fullPagetext[lineIndex].split("   ")[0]
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
 
                             row = fullPagetext[lineIndex].split()
 
@@ -819,10 +732,7 @@ def file_parse(file):
                             pageHeader = fullPagetext[lineIndex].split("   ")[0] + " " + nextLine
                             fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine, "")
                             #get rid of ( ) and $
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                            fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                            cleanSpecialChars(lineIndex+1)
 
 
                             row = fullPagetext[lineIndex+1].split()
@@ -832,10 +742,7 @@ def file_parse(file):
                         else:
                             pageHeader = fullPagetext[lineIndex].split("   ")[0]
                             #get rid of ( ) with - and $ with empty
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
 
                             row = fullPagetext[lineIndex].split()
                             FINAL_PAGE_DATA.append(dfLine(date, county, header, pageHeader, row[len(row) - 4], row[len(row) - 3], row[len(row) - 2]))
@@ -949,18 +856,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    cashAndPooledInvestmentList.append(date)
-                                    cashAndPooledInvestmentList.append(county)
-                                    cashAndPooledInvestmentList.append(header)
-                                    cashAndPooledInvestmentList.append(pageHeader)
-                                    cashAndPooledInvestmentList.append(row[0])
+									storeInList(cashAndPooledInvestmentList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(cashAndPooledInvestmentList)
@@ -975,19 +875,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    cashAndPooledInvestmentList.append(date)
-                                    cashAndPooledInvestmentList.append(county)
-                                    cashAndPooledInvestmentList.append(header)
-                                    cashAndPooledInvestmentList.append(pageHeader)
-                                    cashAndPooledInvestmentList.append(row[0])
+                                    storeInList(cashAndPooledInvestmentList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(cashAndPooledInvestmentList)
@@ -1001,18 +894,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalAssetsList.append(date)
-                                    totalAssetsList.append(county)
-                                    totalAssetsList.append(header)
-                                    totalAssetsList.append(pageHeader)
-                                    totalAssetsList.append(row[0])
+									storeInList(totalAssetsList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalAssetsList)
@@ -1028,19 +914,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    totalAssetsList.append(date)
-                                    totalAssetsList.append(county)
-                                    totalAssetsList.append(header)
-                                    totalAssetsList.append(pageHeader)
-                                    totalAssetsList.append(row[0])
+                                    storeInList(totalAssetsList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE     
                                     FINAL_PAGE_DATA.append(totalAssetsList)
@@ -1054,18 +933,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalLiabilitiesList.append(date)
-                                    totalLiabilitiesList.append(county)
-                                    totalLiabilitiesList.append(header)
-                                    totalLiabilitiesList.append(pageHeader)
-                                    totalLiabilitiesList.append(row[0])
+									storeInList(totalLiabilitiesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalLiabilitiesList)
@@ -1080,19 +952,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    totalLiabilitiesList.append(date)
-                                    totalLiabilitiesList.append(county)
-                                    totalLiabilitiesList.append(header)
-                                    totalLiabilitiesList.append(pageHeader)
-                                    totalLiabilitiesList.append(row[0])
+                                    storeInList(totalLiabilitiesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalLiabilitiesList)
@@ -1106,18 +971,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    nonspenableList.append(date)
-                                    nonspenableList.append(county)
-                                    nonspenableList.append(header)
-                                    nonspenableList.append(pageHeader)
-                                    nonspenableList.append(row[0])
+									storeInList(nonspenableList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(nonspenableList)
@@ -1132,19 +990,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    nonspenableList.append(date)
-                                    nonspenableList.append(county)
-                                    nonspenableList.append(header)
-                                    nonspenableList.append(pageHeader)
-                                    nonspenableList.append(row[0])
+									storeInList(nonspenableList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(nonspenableList)
@@ -1158,18 +1009,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    restrictedList.append(date)
-                                    restrictedList.append(county)
-                                    restrictedList.append(header)
-                                    restrictedList.append(pageHeader)
-                                    restrictedList.append(row[0])
+									storeInList(restrictedList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(restrictedList)
@@ -1184,19 +1028,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    restrictedList.append(date)
-                                    restrictedList.append(county)
-                                    restrictedList.append(header)
-                                    restrictedList.append(pageHeader)
-                                    restrictedList.append(row[0])
+									storeInList(restrictedList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE   
                                     FINAL_PAGE_DATA.append(restrictedList) 
@@ -1210,18 +1047,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    commitedList.append(date)
-                                    commitedList.append(county)
-                                    commitedList.append(header)
-                                    commitedList.append(pageHeader)
-                                    commitedList.append(row[0])
+									storeInList(commitedList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(commitedList)
@@ -1236,19 +1066,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    commitedList.append(date)
-                                    commitedList.append(county)
-                                    commitedList.append(header)
-                                    commitedList.append(pageHeader)
-                                    commitedList.append(row[0])
+                                    storeInList(commitedList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(commitedList)
@@ -1262,18 +1085,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    assignedList.append(date)
-                                    assignedList.append(county)
-                                    assignedList.append(header)
-                                    assignedList.append(pageHeader)
-                                    assignedList.append(row[0])
+									storeInList(assignedList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(assignedList)
@@ -1288,19 +1104,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                    
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    assignedList.append(date)
-                                    assignedList.append(county)
-                                    assignedList.append(header)
-                                    assignedList.append(pageHeader)
-                                    assignedList.append(row[0])
+                                    storeInList(assignedList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(assignedList)
@@ -1316,18 +1125,11 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    unassignedList.append(date)
-                                    unassignedList.append(county)
-                                    unassignedList.append(header)
-                                    unassignedList.append(pageHeader)
-                                    unassignedList.append(row[0])
+									storeInList(unassignedList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(unassignedList)
@@ -1342,20 +1144,13 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
 
                                     #Store data into a list
-                                    unassignedList.append(date)
-                                    unassignedList.append(county)
-                                    unassignedList.append(header)
-                                    unassignedList.append(pageHeader)
-                                    unassignedList.append(row[0])
+									storeInList(unassignedList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(unassignedList)
@@ -1371,18 +1166,11 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalFundBalancesList.append(date)
-                                    totalFundBalancesList.append(county)
-                                    totalFundBalancesList.append(header)
-                                    totalFundBalancesList.append(pageHeader)
-                                    totalFundBalancesList.append(row[0])
+									storeInList(totalFundBalancesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalFundBalancesList)
@@ -1397,19 +1185,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
 
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    totalFundBalancesList.append(date)
-                                    totalFundBalancesList.append(county)
-                                    totalFundBalancesList.append(header)
-                                    totalFundBalancesList.append(pageHeader)
-                                    totalFundBalancesList.append(row[0])
+                                    storeInList(totalFundBalancesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(totalFundBalancesList)
@@ -1437,10 +1218,7 @@ def file_parse(file):
                             matchCounter += 1
                         if matchCounter in dataLineIndexes:
                             #get rid of ( ) and $
-                            fullNextPagetext[lineIndex2] = fullNextPagetext[lineIndex2].replace("$", " ")
-                            fullNextPagetext[lineIndex2] = fullNextPagetext[lineIndex2].replace("-", "0")
-                            fullNextPagetext[lineIndex2] = fullNextPagetext[lineIndex2].replace("(", "-")
-                            fullNextPagetext[lineIndex2] = fullNextPagetext[lineIndex2].replace(")", "")
+                            cleanSpecialChars(lineIndex2)
 
                             #Split numerical data by, based on space detected between each
                             row = fullNextPagetext[lineIndex2].split()
@@ -1489,10 +1267,7 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1515,10 +1290,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -1541,10 +1313,7 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1567,10 +1336,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -1593,10 +1359,7 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1619,10 +1382,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -1645,10 +1405,7 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1671,10 +1428,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -1697,10 +1451,7 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1723,10 +1474,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -1749,10 +1497,7 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1775,10 +1520,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -1801,10 +1543,7 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1827,10 +1566,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                    
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -1855,10 +1591,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1881,10 +1614,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -1910,10 +1640,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
@@ -1935,10 +1662,7 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
 
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
@@ -2066,18 +1790,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    propertyTaxesList.append(date)
-                                    propertyTaxesList.append(county)
-                                    propertyTaxesList.append(header)
-                                    propertyTaxesList.append(pageHeader)
-                                    propertyTaxesList.append(row[0])
+									storeInList(propertyTaxesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(propertyTaxesList)
@@ -2092,19 +1809,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    propertyTaxesList.append(date)
-                                    propertyTaxesList.append(county)
-                                    propertyTaxesList.append(header)
-                                    propertyTaxesList.append(pageHeader)
-                                    propertyTaxesList.append(row[0])
+                                    storeInList(propertyTaxesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(propertyTaxesList)
@@ -2118,18 +1828,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    taxesList.append(date)
-                                    taxesList.append(county)
-                                    taxesList.append(header)
-                                    taxesList.append(pageHeader)
-                                    taxesList.append(row[0])
+									storeInList(taxesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(taxesList)
@@ -2145,19 +1848,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    taxesList.append(date)
-                                    taxesList.append(county)
-                                    taxesList.append(header)
-                                    taxesList.append(pageHeader)
-                                    taxesList.append(row[0])
+                                    storeInList(taxesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE     
                                     FINAL_PAGE_DATA.append(taxesList)
@@ -2171,18 +1867,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalRevenuesList.append(date)
-                                    totalRevenuesList.append(county)
-                                    totalRevenuesList.append(header)
-                                    totalRevenuesList.append(pageHeader)
-                                    totalRevenuesList.append(row[0])
+									storeInList(totalRevenuesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalRevenuesList)
@@ -2197,19 +1886,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    totalRevenuesList.append(date)
-                                    totalRevenuesList.append(county)
-                                    totalRevenuesList.append(header)
-                                    totalRevenuesList.append(pageHeader)
-                                    totalRevenuesList.append(row[0])
+                                    storeInList(totalRevenuesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalRevenuesList)
@@ -2223,18 +1905,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    debtServiceList.append(date)
-                                    debtServiceList.append(county)
-                                    debtServiceList.append(header)
-                                    debtServiceList.append(pageHeader)
-                                    debtServiceList.append(row[0])
+									storeInList(debtServiceList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(debtServiceList)
@@ -2249,19 +1924,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    debtServiceList.append(date)
-                                    debtServiceList.append(county)
-                                    debtServiceList.append(header)
-                                    debtServiceList.append(pageHeader)
-                                    debtServiceList.append(row[0])
+                                    storeInList(debtServiceList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(debtServiceList)
@@ -2275,19 +1943,12 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex].split("  ")
                                     row = list(filter(None, row))
                                     #Store data into a list
-                                    principalList.append(date)
-                                    principalList.append(county)
-                                    principalList.append(header)
-                                    principalList.append(pageHeader)
-                                    principalList.append(row[0])
+									storeInList(principalList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(principalList)
@@ -2302,21 +1963,14 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
 
                                     #Split numerical data by, based on space detected between each
                                     print(fullPagetext[lineIndex])
                                     row = fullPagetext[lineIndex].split("  ")
                                     row = list(filter(None, row))
                                     #Store data into a list
-                                    principalList.append(date)
-                                    principalList.append(county)
-                                    principalList.append(header)
-                                    principalList.append(pageHeader)
-                                    principalList.append(row[0])
+									storeInList(principalList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE   
                                     FINAL_PAGE_DATA.append(principalList) 
@@ -2330,18 +1984,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    interestAndFiscalChargesList.append(date)
-                                    interestAndFiscalChargesList.append(county)
-                                    interestAndFiscalChargesList.append(header)
-                                    interestAndFiscalChargesList.append(pageHeader)
-                                    interestAndFiscalChargesList.append(row[0])
+									storeInList(interestAndFiscalChargesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(interestAndFiscalChargesList)
@@ -2356,19 +2003,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    interestAndFiscalChargesList.append(date)
-                                    interestAndFiscalChargesList.append(county)
-                                    interestAndFiscalChargesList.append(header)
-                                    interestAndFiscalChargesList.append(pageHeader)
-                                    interestAndFiscalChargesList.append(row[0])
+                                    storeInList(interestAndFiscalChargesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(interestAndFiscalChargesList)
@@ -2382,18 +2022,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    capitalOutlayList.append(date)
-                                    capitalOutlayList.append(county)
-                                    capitalOutlayList.append(header)
-                                    capitalOutlayList.append(pageHeader)
-                                    capitalOutlayList.append(row[0])
+									storeInList(capitalOutlayList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(capitalOutlayList)
@@ -2408,19 +2041,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                    
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    capitalOutlayList.append(date)
-                                    capitalOutlayList.append(county)
-                                    capitalOutlayList.append(header)
-                                    capitalOutlayList.append(pageHeader)
-                                    capitalOutlayList.append(row[0])
+									storeInList(capitalOutlayList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(capitalOutlayList)
@@ -2436,18 +2062,11 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalExpendituresList.append(date)
-                                    totalExpendituresList.append(county)
-                                    totalExpendituresList.append(header)
-                                    totalExpendituresList.append(pageHeader)
-                                    totalExpendituresList.append(row[0])
+									storeInList(totalExpendituresList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalExpendituresList)
@@ -2462,20 +2081,13 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
 
                                     #Store data into a list
-                                    totalExpendituresList.append(date)
-                                    totalExpendituresList.append(county)
-                                    totalExpendituresList.append(header)
-                                    totalExpendituresList.append(pageHeader)
-                                    totalExpendituresList.append(row[0])
+                                    storeInList(totalExpendituresList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(totalExpendituresList)
@@ -2491,18 +2103,11 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalOtherFinancingSourcesList.append(date)
-                                    totalOtherFinancingSourcesList.append(county)
-                                    totalOtherFinancingSourcesList.append(header)
-                                    totalOtherFinancingSourcesList.append(pageHeader)
-                                    totalOtherFinancingSourcesList.append(row[0])
+									storeInList(totalOtherFinancingSourcesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalOtherFinancingSourcesList)
@@ -2517,19 +2122,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
 
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    totalOtherFinancingSourcesList.append(date)
-                                    totalOtherFinancingSourcesList.append(county)
-                                    totalOtherFinancingSourcesList.append(header)
-                                    totalOtherFinancingSourcesList.append(pageHeader)
-                                    totalOtherFinancingSourcesList.append(row[0])
+                                    storeInList(totalOtherFinancingSourcesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(totalOtherFinancingSourcesList)
@@ -2545,18 +2143,11 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    netChangeInFundBalancesList.append(date)
-                                    netChangeInFundBalancesList.append(county)
-                                    netChangeInFundBalancesList.append(header)
-                                    netChangeInFundBalancesList.append(pageHeader)
-                                    netChangeInFundBalancesList.append(row[0])
+									storeInList(netChangeInFundBalancesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(netChangeInFundBalancesList)
@@ -2571,19 +2162,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
 
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    netChangeInFundBalancesList.append(date)
-                                    netChangeInFundBalancesList.append(county)
-                                    netChangeInFundBalancesList.append(header)
-                                    netChangeInFundBalancesList.append(pageHeader)
-                                    netChangeInFundBalancesList.append(row[0])
+                                    storeInList(netChangeInFundBalancesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(netChangeInFundBalancesList)
@@ -2611,10 +2195,7 @@ def file_parse(file):
                             matchCounter += 1
                         if matchCounter in dataLineIndexes:
                             #get rid of ( ) and $
-                            fullNextPagetext[lineIndex2] = fullNextPagetext[lineIndex2].replace("$", " ")
-                            fullNextPagetext[lineIndex2] = fullNextPagetext[lineIndex2].replace("-", "0")
-                            fullNextPagetext[lineIndex2] = fullNextPagetext[lineIndex2].replace("(", "-")
-                            fullNextPagetext[lineIndex2] = fullNextPagetext[lineIndex2].replace(")", "")
+                            cleanSpecialChars(lineIndex2)
 
                             #Split numerical data by, based on space detected between each
                             row = fullNextPagetext[lineIndex2].split("  ") #CHANGEDDD
@@ -2668,18 +2249,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    propertyTaxesList.append(date)
-                                    propertyTaxesList.append(county)
-                                    propertyTaxesList.append(header)
-                                    propertyTaxesList.append(pageHeader)
-                                    propertyTaxesList.append(row[0])
+									storeInList(propertyTaxesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(propertyTaxesList)
@@ -2693,19 +2267,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    propertyTaxesList.append(date)
-                                    propertyTaxesList.append(county)
-                                    propertyTaxesList.append(header)
-                                    propertyTaxesList.append(pageHeader)
-                                    propertyTaxesList.append(row[0])
+                                    storeInList(propertyTaxesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(propertyTaxesList)
@@ -2718,18 +2285,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    taxesList.append(date)
-                                    taxesList.append(county)
-                                    taxesList.append(header)
-                                    taxesList.append(pageHeader)
-                                    taxesList.append(row[0])
+									storeInList(taxesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(taxesList)
@@ -2744,19 +2304,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    taxesList.append(date)
-                                    taxesList.append(county)
-                                    taxesList.append(header)
-                                    taxesList.append(pageHeader)
-                                    taxesList.append(row[0])
+									storeInList(taxesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE     
                                     FINAL_PAGE_DATA.append(taxesList)
@@ -2769,18 +2322,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalRevenuesList.append(date)
-                                    totalRevenuesList.append(county)
-                                    totalRevenuesList.append(header)
-                                    totalRevenuesList.append(pageHeader)
-                                    totalRevenuesList.append(row[0])
+									storeInList(totalRevenuesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalRevenuesList)
@@ -2794,19 +2340,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    totalRevenuesList.append(date)
-                                    totalRevenuesList.append(county)
-                                    totalRevenuesList.append(header)
-                                    totalRevenuesList.append(pageHeader)
-                                    totalRevenuesList.append(row[0])
+									storeInList(totalRevenuesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalRevenuesList)
@@ -2819,18 +2358,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    debtServiceList.append(date)
-                                    debtServiceList.append(county)
-                                    debtServiceList.append(header)
-                                    debtServiceList.append(pageHeader)
-                                    debtServiceList.append(row[0])
+									storeInList(debtServiceList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(debtServiceList)
@@ -2844,19 +2376,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    debtServiceList.append(date)
-                                    debtServiceList.append(county)
-                                    debtServiceList.append(header)
-                                    debtServiceList.append(pageHeader)
-                                    debtServiceList.append(row[0])
+                                    storeInList(debtServiceList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(debtServiceList)
@@ -2869,19 +2394,12 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex].split("  ")
                                     row = list(filter(None, row))
                                     #Store data into a list
-                                    principalList.append(date)
-                                    principalList.append(county)
-                                    principalList.append(header)
-                                    principalList.append(pageHeader)
-                                    principalList.append(row[0])
+									storeInList(principalList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(principalList)
@@ -2895,20 +2413,13 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split("  ")
                                     row = list(filter(None, row))
                                     #Store data into a list
-                                    principalList.append(date)
-                                    principalList.append(county)
-                                    principalList.append(header)
-                                    principalList.append(pageHeader)
-                                    principalList.append(row[0])
+                                    storeInList(principalList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE   
                                     FINAL_PAGE_DATA.append(debtServiceList) 
@@ -2921,18 +2432,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    interestAndFiscalChargesList.append(date)
-                                    interestAndFiscalChargesList.append(county)
-                                    interestAndFiscalChargesList.append(header)
-                                    interestAndFiscalChargesList.append(pageHeader)
-                                    interestAndFiscalChargesList.append(row[0])
+									storeInList(interestAndFiscalChargesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(interestAndFiscalChargesList)
@@ -2946,19 +2450,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                     
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    interestAndFiscalChargesList.append(date)
-                                    interestAndFiscalChargesList.append(county)
-                                    interestAndFiscalChargesList.append(header)
-                                    interestAndFiscalChargesList.append(pageHeader)
-                                    interestAndFiscalChargesList.append(row[0])
+                                    storeInList(interestAndFiscalChargesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(commitedList)
@@ -2971,18 +2468,11 @@ def file_parse(file):
                                     #Keep data, remove header
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    capitalOutlayList.append(date)
-                                    capitalOutlayList.append(county)
-                                    capitalOutlayList.append(header)
-                                    capitalOutlayList.append(pageHeader)
-                                    capitalOutlayList.append(row[0])
+									storeInList(capitalOutlayList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(capitalOutlayList)
@@ -2996,19 +2486,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                    
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    capitalOutlayList.append(date)
-                                    capitalOutlayList.append(county)
-                                    capitalOutlayList.append(header)
-                                    capitalOutlayList.append(pageHeader)
-                                    capitalOutlayList.append(row[0])
+									storeInList(capitalOutlayList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(capitalOutlayList)
@@ -3023,18 +2506,11 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalExpendituresList.append(date)
-                                    totalExpendituresList.append(county)
-                                    totalExpendituresList.append(header)
-                                    totalExpendituresList.append(pageHeader)
-                                    totalExpendituresList.append(row[0])
+									storeInList(totalExpendituresList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalExpendituresList)
@@ -3048,20 +2524,13 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
 
                                     #Store data into a list
-                                    totalExpendituresList.append(date)
-                                    totalExpendituresList.append(county)
-                                    totalExpendituresList.append(header)
-                                    totalExpendituresList.append(pageHeader)
-                                    totalExpendituresList.append(row[0])
+                                    storeInList(totalExpendituresList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(totalExpendituresList)
@@ -3076,18 +2545,11 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    totalOtherFinancingSourcesList.append(date)
-                                    totalOtherFinancingSourcesList.append(county)
-                                    totalOtherFinancingSourcesList.append(header)
-                                    totalOtherFinancingSourcesList.append(pageHeader)
-                                    totalOtherFinancingSourcesList.append(row[0])
+									storeInList(totalOtherFinancingSourcesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(totalOtherFinancingSourcesList)
@@ -3101,19 +2563,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
 
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    totalOtherFinancingSourcesList.append(date)
-                                    totalOtherFinancingSourcesList.append(county)
-                                    totalOtherFinancingSourcesList.append(header)
-                                    totalOtherFinancingSourcesList.append(pageHeader)
-                                    totalOtherFinancingSourcesList.append(row[0])
+									storeInList(totalOtherFinancingSourcesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(totalOtherFinancingSourcesList)
@@ -3128,18 +2583,11 @@ def file_parse(file):
                                     fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
 
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                    fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                    cleanSpecialChars(lineIndex+1)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex+1].split()
                                     #Store data into a list
-                                    netChangeInFundBalancesList.append(date)
-                                    netChangeInFundBalancesList.append(county)
-                                    netChangeInFundBalancesList.append(header)
-                                    netChangeInFundBalancesList.append(pageHeader)
-                                    netChangeInFundBalancesList.append(row[0])
+									storeInList(netChangeInFundBalancesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE
                                     FINAL_PAGE_DATA.append(netChangeInFundBalancesList)
@@ -3153,19 +2601,12 @@ def file_parse(file):
                                     fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
 
                                     #get rid of ( ) and $
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
 
                                     #Split numerical data by, based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     #Store data into a list
-                                    netChangeInFundBalancesList.append(date)
-                                    netChangeInFundBalancesList.append(county)
-                                    netChangeInFundBalancesList.append(header)
-                                    netChangeInFundBalancesList.append(pageHeader)
-                                    netChangeInFundBalancesList.append(row[0])
+                                    storeInList(netChangeInFundBalancesList, date, county, header, pageHeader, row[0])
 
                                     # NEED TO APPEND THIS TO FINAL_DATA_LIST WHEN ITERATING OVER NEXT PAGE 
                                     FINAL_PAGE_DATA.append(netChangeInFundBalancesList)
@@ -3248,10 +2689,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3262,10 +2700,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3280,10 +2715,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3294,10 +2726,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3312,10 +2741,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3326,10 +2752,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3344,10 +2767,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3358,10 +2778,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3377,10 +2794,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3391,10 +2805,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3409,10 +2820,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3423,10 +2831,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3441,10 +2846,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3455,10 +2857,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3473,10 +2872,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3487,10 +2883,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3505,10 +2898,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3519,10 +2909,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3537,10 +2924,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3551,10 +2935,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3621,10 +3002,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3635,10 +3013,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3653,10 +3028,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3667,10 +3039,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3685,10 +3054,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3699,10 +3065,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3717,10 +3080,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(nextLine[0], "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("$", "")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("-", "0")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace("(", "-")
-                                fullPagetext[lineIndex+1] = fullPagetext[lineIndex+1].replace(")", "")
+                                cleanSpecialChars(lineIndex+1)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex+1].split()
                                 #Store data into a list
@@ -3731,10 +3091,7 @@ def file_parse(file):
                             if(len(thisLine) > 3):
                                 pageHeader = fullPagetext[lineIndex].split("   ")[0]
                                 #get rid of ( ) and $
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(thisLine[0], "")
                                 #Split numerical data by, based on space detected between each
@@ -3809,10 +3166,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -3825,10 +3179,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -3842,10 +3193,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -3858,10 +3206,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -3875,10 +3220,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -3891,10 +3233,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -3908,10 +3247,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -3925,10 +3261,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(tempSplitWordsVar, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -4007,10 +3340,7 @@ def file_parse(file):
                                             subHeader1 = "Actuarially Determined Contribution"
                                             subHeader2 = "Contributions in Relation to the Actuarially Determined Contribution"
                                             #Replace or remove these items and only keep numbers
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("$", "")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("-", "0")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("(", "-")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace(")", "")
+                                            cleanSpecialChars(lineIndex+1)
                                             #Split numerical data by , based on space detected between each
                                             row = fullPagetext[lineIndex + 1].split()
                                             date = date + " " + row[0]
@@ -4022,10 +3352,7 @@ def file_parse(file):
                                     subHeader1 = "Actuarially Determined Contribution"
                                     subHeader2 = "Contributions in Relation to the Actuarially Determined Contribution"
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     date = date + " " + row[0]
@@ -4100,10 +3427,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -4116,10 +3440,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -4133,10 +3454,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -4149,10 +3467,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -4166,10 +3481,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -4182,10 +3494,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -4199,10 +3508,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -4216,10 +3522,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(tempSplitWordsVar, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -4297,10 +3600,7 @@ def file_parse(file):
                                             subHeader1 = "Actuarially Determined Contribution"
                                             subHeader2 = "Contributions in Relation to the Actuarially Determined Contribution"
                                             #Replace or remove these items and only keep numbers
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("$", "")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("-", "0")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("(", "-")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace(")", "")
+                                            cleanSpecialChars(lineIndex+1)
                                             #Split numerical data by , based on space detected between each
                                             row = fullPagetext[lineIndex + 1].split()
                                             date = date + " " + row[0]
@@ -4312,10 +3612,7 @@ def file_parse(file):
                                     subHeader1 = "Actuarially Determined Contribution"
                                     subHeader2 = "Contributions in Relation to the Actuarially Determined Contribution"
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     date = date + " " + row[0]
@@ -4389,10 +3686,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -4405,10 +3699,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -4422,10 +3713,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -4438,10 +3726,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -4455,10 +3740,7 @@ def file_parse(file):
                             #Keep data, remove header
                             fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(subHeader, "")
                             #Replace or remove these items and only keep numbers
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                            fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                            cleanSpecialChars(lineIndex)
                             #Split numerical data by , based on space detected between each
                             row = fullPagetext[lineIndex].split()
                             #Store data into a list
@@ -4472,10 +3754,7 @@ def file_parse(file):
                                 #Keep data, remove header
                                 fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(tempSplitWordsVar, "")
                                 #Replace or remove these items and only keep numbers
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                cleanSpecialChars(lineIndex)
                                 #Split numerical data by , based on space detected between each
                                 row = fullPagetext[lineIndex].split()
                                 #Store data into a list
@@ -4552,10 +3831,7 @@ def file_parse(file):
                                             #extract subline header
                                             subHeader1 = "Actuarially Determined Contribution"
                                             #Replace or remove these items and only keep numbers
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("$", "")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("-", "0")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace("(", "-")
-                                            fullPagetext[lineIndex + 1] = fullPagetext[lineIndex + 1].replace(")", "")
+                                            cleanSpecialChars(lineIndex+1)
                                             #Split numerical data by , based on space detected between each
                                             row = fullPagetext[lineIndex + 1].split()
                                             date = date + " " + row[0]
@@ -4565,10 +3841,7 @@ def file_parse(file):
                                     #extract subline header
                                     subHeader1 = "Actuarially Determined Contribution"
                                     #Replace or remove these items and only keep numbers
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("$", "")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("-", "0")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace("(", "-")
-                                    fullPagetext[lineIndex] = fullPagetext[lineIndex].replace(")", "")
+                                    cleanSpecialChars(lineIndex)
                                     #Split numerical data by , based on space detected between each
                                     row = fullPagetext[lineIndex].split()
                                     date = date + " " + row[0]
