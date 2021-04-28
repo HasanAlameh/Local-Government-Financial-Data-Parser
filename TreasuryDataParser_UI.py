@@ -11,7 +11,9 @@ ftypes = [
 def browse_button():
     # Allow user to select a directory and store it in global var
     # called folder_path
+    global filename, filePath
     filename = filedialog.askopenfile(filetypes=ftypes)
+    filePath = filename.name
     lbl1.config(text=filename.name)
 def program_instructions():
     print("=============================USER INSTRUCTIONS================================================")
@@ -24,7 +26,7 @@ def program_instructions():
     print("==============================================================================================")
 def run_prog():
     # This is your function maitra use the folder_path variable to get filename
-    saveCSVfilepath = file_parse(file_path)
+    saveCSVfilepath = file_parse(filePath)
     finish_msg = StringVar()
     lbl2 = Label(master = root, textvariable=finish_msg, bg='#FED000', fg='black', font = font.Font(size=15), height= 3, highlightthickness = 0, bd = 0)
     finish_msg.set("MESSAGE: Your master CSV file is ready, \nClick on 'Open Master CSV' to open it! \n PATH: " + saveCSVfilepath)

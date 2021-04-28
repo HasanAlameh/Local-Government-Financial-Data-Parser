@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['TreasuryDataParser_UI.py'],
-             pathex=['C:\\Users\\Alameh\\Desktop\\Senior Design\\Previous Group\\prototype-master'],
+             pathex=['C:\\Users\\Alameh\\Documents\\GitHub\\Local-Government-Financial-Data-Parser'],
              binaries=[],
              datas=[],
              hiddenimports=['pandas', 'pdfplumber'],
