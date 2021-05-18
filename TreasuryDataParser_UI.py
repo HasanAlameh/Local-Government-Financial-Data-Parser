@@ -1,7 +1,7 @@
 from tkinter import filedialog
 from tkinter import *
 import tkinter.font as font
-from parseTest import *
+from newParse import *
 import subprocess, os, platform
 
 ftypes = [
@@ -29,7 +29,7 @@ def run_prog():
     saveCSVfilepath = file_parse(filePath)
     finish_msg = StringVar()
     lbl2 = Label(master = root, textvariable=finish_msg, bg='#FED000', fg='black', font = font.Font(size=15), height= 3, highlightthickness = 0, bd = 0)
-    finish_msg.set("MESSAGE: Your master CSV file is ready, \nClick on 'Open Master CSV' to open it! \n PATH: " + saveCSVfilepath)
+    #finish_msg.set("MESSAGE: Your master CSV file is ready, \nClick on 'Open Master CSV' to open it! \n PATH: " + saveCSVfilepath)
     lbl2.pack()
 
 def open_file():
