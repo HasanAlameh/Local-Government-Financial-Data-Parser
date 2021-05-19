@@ -41,33 +41,43 @@ def open_file():
     else:                                   # linux variants
         subprocess.call(('xdg-open', filepath))
 
+#Change button color on hover & back again
+def btn_on_enter(self):
+    self.widget['background'] = '#343434'
+
+def btn_on_leave(self):
+    self.widget['background'] = '#424242'
 
 root = Tk()
 program_instructions()
 myFont = font.Font(size=30)
-root.geometry("820x350")
+root.geometry("790x350")
 root.configure(bg='#1F1F1F')
 root.title("TREASURY DATA PARSER")
 
 frame1 = Frame(bg = '#1F1F1F', height=1)
 frame1.pack(fill=X)
 
-lbl1 = Label(frame1,text="No Audit file selected.", bg='#1F1F1F', fg='white', font = 30, height= 2, width = 78,relief="ridge")
+lbl1 = Label(frame1,text="No Audit file selected.", bg='#1F1F1F', fg='white', font = 30, height= 2, width = 61,relief="ridge")
 lbl1.pack(side=LEFT, padx=5, pady=20)
 
-button2 = Button(frame1, text="Browse", command=browse_button, relief="groove")
+button2 = Button(frame1, text="Browse", command=browse_button, relief="groove", cursor="hand2")
 button2['font'] = font.Font(size = 10)
 button2.config(height=2, width = 10)
 button2.pack(side=LEFT)
 
-button3 = Button(text="Submit", command=run_prog, bg='#1F1F1F', fg='white', activebackground='#FF8000', relief="raised") # put your function name in the command option maitra
+button3 = Button(text="Submit", command=run_prog, bg='#424242', fg='white', activebackground='#343434', activeforeground='white', relief="raised", cursor="hand2") # put your function name in the command option maitra
 button3['font'] = myFont
 button3.config(height=1, width = 15)
 button3.pack(side=LEFT, padx=10)
+button3.bind("<Enter>", btn_on_enter)
+button3.bind("<Leave>", btn_on_leave)
 
-button4 = Button(text="Open Master CSV", command=open_file, bg='#1F1F1F', fg='white', activebackground='#FF8000', relief="raised") # put your function name in the command option maitra
+button4 = Button(text="Open Master CSV", command=open_file, bg='#424242', fg='white', activebackground='#343434', activeforeground='white', relief="raised", cursor="hand2") # put your function name in the command option maitra
 button4['font'] = myFont
 button4.config(height=1, width = 17)
 button4.pack(side=LEFT, padx=5)
+button4.bind("<Enter>", btn_on_enter)
+button4.bind("<Leave>", btn_on_leave)
 
 mainloop()
