@@ -222,6 +222,45 @@ def file_parse(file):
         #    writer = csv.writer(f, delimiter='\n')
         #    writer.writerow(text)
 
+
+#Clean an extracted row & combine its headers 
+def cleanCombineRow(listName):
+    numberStart = 0
+    
+    #Remove '$' symbols, if applicable
+    if ('$' in listName):
+        for index, ele in enumerate(listName):
+            if ele == '$':
+                listName.pop(index)
+    
+    #Combine seperated label
+    for index, ele in enumerate(listName):
+        try:
+            if (ele[0].isdigit() or ele[1].isdigit()):   #((ele[0].isdigit() and ele[1] != ')')  or ele[1].isdigit()):  (for case when e.g. "5)"? ")
+                numberStart = index
+                break
+        except IndexError:
+            print("Err: Index out of range")
+    listName[0:numberStart] = [' '.join(listName[0:numberStart])]
+
+    #Combine seperated numbers (single digits only)
+    for index, ele in enumerate(listName):
+        try:
+            if(len(ele) == 1 and ele.isdigit()):
+                if(listName[index+1][0].isdigit or listName[index+1][1].isdigit):
+                    listName[index : index+2] = [''.join(listName[index : index+2])]
+                    print("Joined numbers!")
+                
+        except IndexError:
+            print("Err: Index out of range")
+
+def storeRow(txtLine):
+    ##txtLine = re.sub('(?<=\d) (?=\d)', '', txtLine) #TODO: This line is a BAND-AID fix for e.g. Wayne County that may have "mystery spaces" in their numbers
+    tempRow = txtLine.split()
+    cleanCombineRow(tempRow)
+    rowList.append(tempRow)
+
+rowList = []
 #After finding and storing the needed pages, start finding the numbers we need
 def parseStoredPages():
     for page in statementOfNetPositionPages:
@@ -249,38 +288,64 @@ def parseStoredPages():
             #Cash and pooled investments
             if "CASH" in line and "INVESTMENT" in line:
                 print("Assets - " + line)
+                storeRow(line)
+
             #Some have investments on a separate row
             elif line.startswith("INVESTMENTS"):
                 print("Assets - " + line)
+                storeRow(line)
+
             #Capital assets being/not being depreciated
             elif "ASSETS" in line and ("DEPRECIATED" in line or "DEPRECIATION" in line):
                 print("Assets - " + line)
+                storeRow(line)
             #Total assets
             elif line.startswith("TOTAL ASSETS"):
                 print("Assets - " + line)
+                storeRow(line)
             #Some formats have "due within one year:" broken down, if so print the rows under
             elif "DUE" in line and "YEAR" in line:
                 if 'YEAR:' in line:
                     printNextLine = True
                 print("Liabilities - " + line)
+                
+                if any(char.isdigit() for char in line): #Only includes line if contains numbers
+                    storeRow(line)
             #Total liabilities
             elif line.startswith("TOTAL LIABILITIES"):
                 print("Liabilities - " + line)
+                storeRow(line)
             elif "NET" in line:
                 #Total net position
                 if line.startswith("TOTAL NET POSITION"):
                     print(line)
+                    storeRow(line)
                 #Net pension liability
                 if "PENSION" in line and "LIABILITY" in line:
                     print("Liabilities - " + line)
+                    storeRow(line)
                 #Postemployment benefits or OPEB
                 elif (("OTHER" in line and "POSTEMPLOYMENT" in line and "BENEFITS" in line) or "OPEB" in line) and "LIABILITY" in line:
                     print("Liabilities - " + line)
+                    storeRow(line)
                 #Net investment in capital assets
                 elif "INVESTMENT" in line and "CAPITAL" in line and "ASSET" in line:
                     print("Net position - " + line)
+                    storeRow(line)
             #Unrestricted (deficit)
             elif line.startswith("UNRESTRICTED"):
                 print("Net position - " + line)
+                storeRow(line)
             #elif "TOTAL" in line and "NET" in line and "POSITION" in line:
              #   print(line)
+
+    print(rowList)
+
+    csvName = "newOutput2.csv"
+    headers = ['Entry Title', 'Governmental Activities', 'Business-type Activities', 'Total', 'Component Units']
+    with open(csvName, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(headers)
+        csvwriter.writerows(rowList)
+
+            
