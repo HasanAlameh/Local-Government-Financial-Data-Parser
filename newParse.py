@@ -265,6 +265,7 @@ rowList = []
 #After finding and storing the needed pages, start finding the numbers we need
 def parseStoredPages():
     dataWantedFound = False
+
     #This array will be used to follow the tabs of the different rows to keep track of categories that are broken down
     tabValues = []
     defaultTabValue = None
@@ -273,16 +274,17 @@ def parseStoredPages():
     for page in statementOfNetPositionPages:
         previousLine = None
         prefix = []
-        printNextLine = False
         extractedText = page.extract_text(y_tolerance=5)
         extractedText = unicodedata.normalize('NFKD', extractedText)
         #extractedText = re.sub('\(.*?\)','', extractedText)
         splitText = extractedText.split('\n')
         previousFirstChar = None
+
         #page.chars is a list of the page's charachters, each character in the list is a dictionary with multiple keys
         #So we can extract the text values from the dictionaries into a list of chars
         pageChars = []
         for charObject in page.chars:
+            #Extract the text key from the dictionary since we won't need the other properties
             pageChars.append(charObject.get('text'))
 
         for line in splitText:
@@ -291,9 +293,12 @@ def parseStoredPages():
             for i, j in enumerate(page.chars):
                  if splitCharacters == pageChars[i:i+len(splitCharacters)]:
                     firstCharInLine = page.chars[i]
-                
+            
             upperCaseLine = line.upper()
 
+            #If we have the initial tab value stored,
+            #Calculate the difference between the tab values of the first two rows
+            #The value will be used as a scale for comparison
             if len(tabValues) == 1 and not defaultTabValue:
                 defaultTabValue = float(firstCharInLine.get('x0')) - float(tabValues[-1])
 
@@ -304,19 +309,15 @@ def parseStoredPages():
                 #This calculates the difference between the distances of the current row and the one before it from the left of the page
                 #We will use it to know whether this row is tabbed more (meaning a value/category is broken down)
                 tabDifference = float(firstCharInLine.get('x0')) - float(tabValues[-1])
-                if previousFirstChar:
-                    heightDifference = float(firstCharInLine.get('top')) - float(previousFirstChar.get('top'))
-                #print("Tab difference at line: " + line + "\n" + str((tabDifference)))
-                #print(prefix)
-                #print(tabValues)
+                
+                #If this line is tabbed more than the default tab value
                 if tabDifference > (defaultTabValue + 1):
                     prefix.append(previousLine + " - ")
                     tabValues.append(firstCharInLine.get('x0'))
-                    #print("PUSHED " + prefix[-1])
-                    #print("Tab difference: " + str(tabDifference) + " Default value: " + str(defaultTabValue))
+
+                #If this line is tabbed less than the line before it
                 elif tabDifference < -1:
                     if prefix:
-                        #print("POPPED " + prefix[-1])
                         prefix.pop()
                         dataWantedFound = False
                     if len(tabValues) > 1:
@@ -395,7 +396,7 @@ def parseStoredPages():
             else:
                 dataWantedFound = False
 
-
+            #Remove the numbers, commas, and $ symbol and store the line for comparison in next loop
             previousLine = ((re.sub('[,-]', '', (re.sub('\d', '', line)))).replace('$','')).strip()
             if firstCharInLine:
                 previousFirstChar = firstCharInLine
