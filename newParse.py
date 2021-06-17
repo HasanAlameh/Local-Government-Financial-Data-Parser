@@ -16,6 +16,7 @@ balanceSheetGovFundsPages = []
 statementOfRevExpendAndChangesGovernmentalFundsPages = []
 statementOfRevExpAndChangesProprietaryFundsPages = []
 
+#Grabs the pages needed and stores them
 def file_parse(file):
     documentDate = ""
     municipalityName = ""
@@ -222,7 +223,6 @@ def file_parse(file):
         #    writer = csv.writer(f, delimiter='\n')
         #    writer.writerow(text)
 
-
 #Clean an extracted row & combine its headers 
 def cleanCombineRow(listName):
     numberStart = 0
@@ -261,91 +261,142 @@ def storeRow(txtLine):
     rowList.append(tempRow)
 
 rowList = []
+
 #After finding and storing the needed pages, start finding the numbers we need
 def parseStoredPages():
-    for page in statementOfNetPositionPages:
-        printNextLine = False
+    dataWantedFound = False
+    #This array will be used to follow the tabs of the different rows to keep track of categories that are broken down
+    tabValues = []
+    defaultTabValue = None
+    firstCharInLine = None
 
-        extractedText = page.extract_text()
+    for page in statementOfNetPositionPages:
+        previousLine = None
+        prefix = []
+        printNextLine = False
+        extractedText = page.extract_text(y_tolerance=5)
         extractedText = unicodedata.normalize('NFKD', extractedText)
-        extractedText = extractedText.upper()
+        #extractedText = re.sub('\(.*?\)','', extractedText)
         splitText = extractedText.split('\n')
+        previousFirstChar = None
+        #page.chars is a list of the page's charachters, each character in the list is a dictionary with multiple keys
+        #So we can extract the text values from the dictionaries into a list of chars
+        pageChars = []
+        for charObject in page.chars:
+            pageChars.append(charObject.get('text'))
 
         for line in splitText:
-            if printNextLine:
-                #Needs some fixing so it only prints the lines under the "Due within one/more than one year:" line
-                if not line.startswith("DUE"):
-                    #Keep printing till you either reach the next "due within" category or reach the total liablities line
-                    if line.startswith("TOTAL"):
-                        printNextLine = False
-                    else:
-                        #For easier reading
-                        print('\t' + line)
-                        continue
-                else:
-                    printNextLine = False
-            
-            #Cash and pooled investments
-            if "CASH" in line and "INVESTMENT" in line:
-                print("Assets - " + line)
-                storeRow(line)
-
-            #Some have investments on a separate row
-            elif line.startswith("INVESTMENTS"):
-                print("Assets - " + line)
-                storeRow(line)
-
-            #Capital assets being/not being depreciated
-            elif "ASSETS" in line and ("DEPRECIATED" in line or "DEPRECIATION" in line):
-                print("Assets - " + line)
-                storeRow(line)
-            #Total assets
-            elif line.startswith("TOTAL ASSETS"):
-                print("Assets - " + line)
-                storeRow(line)
-            #Some formats have "due within one year:" broken down, if so print the rows under
-            elif "DUE" in line and "YEAR" in line:
-                if 'YEAR:' in line:
-                    printNextLine = True
-                print("Liabilities - " + line)
+            #Find the index of the matched line in page.chars, will be used to get the tab value
+            splitCharacters = [x for x in line[0:10]]
+            for i, j in enumerate(page.chars):
+                 if splitCharacters == pageChars[i:i+len(splitCharacters)]:
+                    firstCharInLine = page.chars[i]
                 
-                if any(char.isdigit() for char in line): #Only includes line if contains numbers
-                    storeRow(line)
+            upperCaseLine = line.upper()
+
+            if len(tabValues) == 1 and not defaultTabValue:
+                defaultTabValue = float(firstCharInLine.get('x0')) - float(tabValues[-1])
+
+            #Only print lines that contain numbers in them
+            lineContainsNumbers = bool(re.search(r'-?\d+', re.sub('\(.*?\)','', upperCaseLine)))
+
+            if tabValues:
+                #This calculates the difference between the distances of the current row and the one before it from the left of the page
+                #We will use it to know whether this row is tabbed more (meaning a value/category is broken down)
+                tabDifference = float(firstCharInLine.get('x0')) - float(tabValues[-1])
+                if previousFirstChar:
+                    heightDifference = float(firstCharInLine.get('top')) - float(previousFirstChar.get('top'))
+                #print("Tab difference at line: " + line + "\n" + str((tabDifference)))
+                #print(prefix)
+                #print(tabValues)
+                if tabDifference > (defaultTabValue + 1):
+                    prefix.append(previousLine + " - ")
+                    tabValues.append(firstCharInLine.get('x0'))
+                    #print("PUSHED " + prefix[-1])
+                    #print("Tab difference: " + str(tabDifference) + " Default value: " + str(defaultTabValue))
+                elif tabDifference < -1:
+                    if prefix:
+                        #print("POPPED " + prefix[-1])
+                        prefix.pop()
+                        dataWantedFound = False
+                    if len(tabValues) > 1:
+                        tabValues.pop()
+                    while len(tabValues) > 1 and float(firstCharInLine.get('x0')) - float(tabValues[-1]) < -1:
+                        tabValues.pop()
+                        if prefix:
+                            prefix.pop()
+
+            if dataWantedFound and len(tabValues) > 1 and "TOTAL" not in upperCaseLine:
+                print(''.join(prefix) + upperCaseLine)
+            #Cash and pooled investments/cash equivalents
+            elif "CASH" in upperCaseLine:
+                if "INVESTMENT" in upperCaseLine or "EQUIVALENT" in upperCaseLine:
+                    if lineContainsNumbers:
+                        print("Assets - " + prefix[-1] + upperCaseLine) if prefix else print("Assets - " + upperCaseLine)
+                    #Since it is always the first line in the table, its tab value will be used as an initial value for comparison with other lines
+                    #initialTabValue = firstCharInLine.get('x0')
+                    if not tabValues:
+                        tabValues.append(firstCharInLine.get('x0'))
+                    dataWantedFound = True
+            #Some have investments on a separate row
+            elif upperCaseLine.startswith("INVESTMENT"):
+                if lineContainsNumbers:
+                    print("Assets - " + prefix[-1] + upperCaseLine) if prefix else print("Assets - " + upperCaseLine)
+                dataWantedFound = True
+            #Capital assets being/not being depreciated
+            elif "ASSETS" in upperCaseLine and ("DEPRECIATED" in upperCaseLine or "DEPRECIATION" in upperCaseLine or "DEPRECIABLE" in upperCaseLine):
+                if lineContainsNumbers:
+                    print("Assets - " + prefix[-1] + upperCaseLine) if prefix else print("Assets - " + upperCaseLine)
+                dataWantedFound = True
+            #Sometimes capital assets are broken down
+            elif "CAPITAL" in upperCaseLine and "ASSETS" in upperCaseLine and not lineContainsNumbers:
+                dataWantedFound = True
+            #Total assets
+            elif upperCaseLine.startswith("TOTAL ASSETS"):
+                if lineContainsNumbers:
+                    print("Assets - " + upperCaseLine)
+                dataWantedFound = True
+            #Some formats have "due within one year:" broken down, if so print the rows under
+            elif ("DUE" in upperCaseLine and "YEAR" in upperCaseLine) or ("CURRENT" in upperCaseLine and "LIABILITIES" in upperCaseLine):
+                if lineContainsNumbers:
+                    print("Liabilities - " + prefix[-1] + upperCaseLine) if prefix else print("Liabilities - " + upperCaseLine)
+                dataWantedFound = True
             #Total liabilities
-            elif line.startswith("TOTAL LIABILITIES"):
-                print("Liabilities - " + line)
-                storeRow(line)
-            elif "NET" in line:
+            elif upperCaseLine.startswith("TOTAL LIABILITIES"):
+                if lineContainsNumbers:
+                    print("Liabilities - " + upperCaseLine)
+                dataWantedFound = True
+            elif "NET" in upperCaseLine:
                 #Total net position
-                if line.startswith("TOTAL NET POSITION"):
-                    print(line)
-                    storeRow(line)
+                if upperCaseLine.startswith("TOTAL NET POSITION"):
+                    if lineContainsNumbers:
+                        print(upperCaseLine)
+                    dataWantedFound = True
                 #Net pension liability
-                if "PENSION" in line and "LIABILITY" in line:
-                    print("Liabilities - " + line)
-                    storeRow(line)
+                if "PENSION" in upperCaseLine and "LIABILITY" in upperCaseLine:
+                    if lineContainsNumbers:
+                        print("Liabilities - " + prefix[-1] + upperCaseLine) if prefix else print("Liabilities - " + upperCaseLine)
+                    dataWantedFound = True
                 #Postemployment benefits or OPEB
-                elif (("OTHER" in line and "POSTEMPLOYMENT" in line and "BENEFITS" in line) or "OPEB" in line) and "LIABILITY" in line:
-                    print("Liabilities - " + line)
-                    storeRow(line)
+                elif (("OTHER" in upperCaseLine and "POSTEMPLOYMENT" in upperCaseLine and "BENEFITS" in upperCaseLine) or "OPEB" in upperCaseLine) and "LIABILITY" in upperCaseLine:
+                    if lineContainsNumbers:
+                        print("Liabilities - " + prefix[-1] + upperCaseLine) if prefix else print("Liabilities - " + upperCaseLine)
+                    dataWantedFound = True
                 #Net investment in capital assets
-                elif "INVESTMENT" in line and "CAPITAL" in line and "ASSET" in line:
-                    print("Net position - " + line)
-                    storeRow(line)
+                elif "INVESTMENT" in upperCaseLine and "CAPITAL" in upperCaseLine and "ASSET" in upperCaseLine:
+                    if lineContainsNumbers:
+                        print("Net position - " + prefix[-1] + upperCaseLine) if prefix else print("Net position - " + upperCaseLine)
+                    dataWantedFound = True
             #Unrestricted (deficit)
-            elif line.startswith("UNRESTRICTED"):
-                print("Net position - " + line)
-                storeRow(line)
-            #elif "TOTAL" in line and "NET" in line and "POSITION" in line:
-             #   print(line)
+            elif "UNRESTRICTED" in upperCaseLine:
+                #if lineContainsNumbers:
+                print("Net position - " + prefix[-1] + upperCaseLine) if prefix else print("Net position - " + upperCaseLine)
+                dataWantedFound = True
+            else:
+                dataWantedFound = False
 
-    print(rowList)
 
-    csvName = "newOutput2.csv"
-    headers = ['Entry Title', 'Governmental Activities', 'Business-type Activities', 'Total', 'Component Units']
-    with open(csvName, 'w', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(headers)
-        csvwriter.writerows(rowList)
-
-            
+            previousLine = ((re.sub('[,-]', '', (re.sub('\d', '', line)))).replace('$','')).strip()
+            if firstCharInLine:
+                previousFirstChar = firstCharInLine
+                
