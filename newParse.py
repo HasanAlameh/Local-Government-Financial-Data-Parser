@@ -16,10 +16,14 @@ balanceSheetGovFundsPages = []
 statementOfRevExpendAndChangesGovernmentalFundsPages = []
 statementOfRevExpAndChangesProprietaryFundsPages = []
 
+documentDate = ""
+municipalityName = ""
+
 #Grabs the pages needed and stores them
 def file_parse(file):
-    documentDate = ""
-    municipalityName = ""
+    global documentDate
+    global municipalityName
+
     balanceSheetFound = False
     statementOfRevGovFundsFound = False
     netPositionProprietaryFundsFound = False
@@ -29,10 +33,9 @@ def file_parse(file):
     previousPageAdded = False
     textFound = False
 
-
     #Specifying that the date format used is always (mmmm dd, yyyy)
     dateFilter = re.compile(r'[a-zA-Z]+\s\d\d[,]\s\d\d\d\d')
-
+    
     #Read the PDF file
     with pdfplumber.open(file) as pdf:
 
@@ -91,7 +94,7 @@ def file_parse(file):
                     line = line.strip()
 
                     #Find Statement of Net Position pages
-                    if (line == "STATEMENT OF NET POSITION" or line == "STATEMENT OF NET POSITION (CONTINUED)") and not any(line.startswith("FIDUCIARY FUNDS") for line in splitText):
+                    if (line == "STATEMENT OF NET POSITION" or line == "STATEMENT OF NET POSITION (CONTINUED)") and not any(line.startswith("FIDUCIARY FUNDS") for line in splitText) and "RECONCILIATION" not in extractedText:
                         #If date has not been found yet
                         if not documentDate:
                             if len(dateFilter.findall(extractedText)):
@@ -125,7 +128,7 @@ def file_parse(file):
                                 textFound = True
 
                     #Find statement of activities pages
-                    elif (line == "STATEMENT OF ACTIVITIES" or line == "STATEMENT OF ACTIVITIES (CONTINUED)"):
+                    elif (line == "STATEMENT OF ACTIVITIES" or line == "STATEMENT OF ACTIVITIES (CONTINUED)") and "RECONCILIATION" not in extractedText:
                         #Some formats (like Livingston 2019) have the row titles on a previous page with no page header
                         if previousPageAdded:
                                     previousPageAdded = False
@@ -138,14 +141,14 @@ def file_parse(file):
                         textFound = True
 
                     #Some formats have "balance sheet" and "governmental funds" on separate lines
-                    elif line.startswith("BALANCE SHEET") and (any (findLine.startswith("GOVERNMENTAL FUNDS") for findLine in splitText) or line.endswith("GOVERNMENTAL FUNDS")):
+                    elif line.startswith("BALANCE SHEET") and (any (findLine.startswith("GOVERNMENTAL FUNDS") for findLine in splitText) or line.endswith("GOVERNMENTAL FUNDS")) and "RECONCILIATION" not in extractedText:
                         balanceSheetGovFundsPages.append(page)
                         #Some balance sheets extend to a second page, so get it just in case
                         balanceSheetFound = True
                         textFound = True
 
                     #Some formats have "statement of revenue", others have "statement of revenues" 
-                    elif  line.startswith("STATEMENT OF REVENUE"):
+                    elif  line.startswith("STATEMENT OF REVENUE") and "RECONCILIATION" not in extractedText:
                         #For statement of revenues, expenditures, and changes in fund balance - governmental funds
                         if "EXPENDITURES" in extractedText and "CHANGE" in extractedText and "FUND BALANCE" in extractedText and (any(line.startswith("GOVERNMENTAL FUNDS") for line in splitText)):
                             statementOfRevExpendAndChangesGovernmentalFundsPages.append(page)
@@ -219,48 +222,88 @@ def file_parse(file):
         parseStoredPages()
         return file
 
-        #with open('newOutput.csv', 'w') as f:
-        #    writer = csv.writer(f, delimiter='\n')
-        #    writer.writerow(text)
-
 #Clean an extracted row & combine its headers 
-def cleanCombineRow(listName):
+def cleanCombineRow(line, page_header = ""):
     numberStart = 0
+    formattedRow = []
+    #line = (re.sub('\(.*?\)','', line)).strip()
+    #line = (line.replace('(NOTE', '')).strip()
+    noteIndex = line.find('(NOTE')
+    while noteIndex > 0:
+        stringToList = list(line)
+        del stringToList[noteIndex:noteIndex+8]
+        line = ''.join(stringToList)
+        noteIndex = line.find('(NOTE')
     
-    #Remove '$' symbols, if applicable
-    if ('$' in listName):
-        for index, ele in enumerate(listName):
-            if ele == '$':
-                listName.pop(index)
-    
-    #Combine seperated label
-    for index, ele in enumerate(listName):
-        try:
-            if (ele[0].isdigit() or ele[1].isdigit()):   #((ele[0].isdigit() and ele[1] != ')')  or ele[1].isdigit()):  (for case when e.g. "5)"? ")
-                numberStart = index
+    #Don't add rows that have no numbers
+    if not bool(re.search(r'-?\d+', re.sub('\(.*?\)','', line))):
+        return
+
+    #Each row in the csv will contain the date, municiplaity name, and page header (if applicable)
+    formattedRow.append(documentDate)
+    formattedRow.append(municipalityName)
+    formattedRow.append(page_header)
+
+    #Find the index where the numbers (or hyphen) start on the line (separate text from numbers)
+    hyphenFound = False
+    hyphenIndex = None
+    for index, ele in enumerate(line):
+        if ele[0] == ' ':
+            continue
+        #To check wether the hyphen is part of the row name or if it's meant to be a zero
+        #We look at what's after the hyphen
+        #If there's a number or another hyphen after it, it's meant to be a zero
+        if hyphenFound:
+            if ele[0].isalpha():
+                hyphenFound = False
+            elif ele[0].isdigit() or ele[0] == '-':
+                numberStart = hyphenIndex
                 break
-        except IndexError:
-            print("Err: Index out of range")
-    listName[0:numberStart] = [' '.join(listName[0:numberStart])]
+        elif ele[0].isdigit():
+            numberStart = index
+            break
+        elif ele[0] == '-':
+            hyphenFound = True
+            hyphenIndex = index
+    
+    #Add text as separate column
+    formattedRow.append(line[0:numberStart].strip())
 
-    #Combine seperated numbers (single digits only)
-    for index, ele in enumerate(listName):
-        try:
-            if(len(ele) == 1 and ele.isdigit()):
-                if(listName[index+1][0].isdigit or listName[index+1][1].isdigit):
-                    listName[index : index+2] = [''.join(listName[index : index+2])]
-                    print("Joined numbers!")
-                
-        except IndexError:
-            print("Err: Index out of range")
+    #Remove the ',' between the numbers so it doesn't mess up the comparisons
+    line = (line[numberStart:len(line)].strip()).replace(',', '')
 
-def storeRow(txtLine):
-    ##txtLine = re.sub('(?<=\d) (?=\d)', '', txtLine) #TODO: This line is a BAND-AID fix for e.g. Wayne County that may have "mystery spaces" in their numbers
-    tempRow = txtLine.split()
-    cleanCombineRow(tempRow)
-    rowList.append(tempRow)
+    lineIndex = 0
+    #Iterate through the string
+    while lineIndex < len(line):
+        #Save current character and copy index (since we will alter it)
+        currentChar = line[lineIndex]
+        indexCopy = lineIndex
+        if currentChar.isdigit():
+            #If a digit is found, keep going till a space (end of number) is found
+            while lineIndex < len(line) and line[lineIndex] != ' ':
+                lineIndex += 1
+            formattedRow.append(line[indexCopy:lineIndex].strip())
+        elif currentChar == '-':
+            #If a dash is found, add it to the output row and skip over it
+            formattedRow.append('-')
+            lineIndex += 1
+        else:
+            lineIndex += 1
 
-rowList = []
+    [x.encode('utf-8') for x in formattedRow]
+
+    if len(formattedRow) > 8:
+        for index, elmnt in enumerate(formattedRow):
+            if len(elmnt) == 1 and elmnt[0].isdigit():
+                formattedRow[index + 1] = formattedRow[index] + formattedRow[index + 1]
+                formattedRow.pop(index)
+                break
+
+    print(formattedRow)
+    with open('newOutput.csv', 'a', newline='') as outputFile:
+        #Append the formatted row to the end of the file
+        writer = csv.writer(outputFile)
+        writer.writerow(formattedRow)
 
 #After finding and storing the needed pages, start finding the numbers we need
 def parseStoredPages():
@@ -271,6 +314,7 @@ def parseStoredPages():
     defaultTabValue = None
     firstCharInLine = None
 
+    #Statement of net position
     for page in statementOfNetPositionPages:
         previousLine = None
         prefix = []
@@ -278,8 +322,6 @@ def parseStoredPages():
         extractedText = unicodedata.normalize('NFKD', extractedText)
         #extractedText = re.sub('\(.*?\)','', extractedText)
         splitText = extractedText.split('\n')
-        previousFirstChar = None
-
         #page.chars is a list of the page's charachters, each character in the list is a dictionary with multiple keys
         #So we can extract the text values from the dictionaries into a list of chars
         pageChars = []
@@ -294,12 +336,13 @@ def parseStoredPages():
                  if splitCharacters == pageChars[i:i+len(splitCharacters)]:
                     firstCharInLine = page.chars[i]
             
+            line = (line.replace('$', '')).replace('\u2010', '-')
             upperCaseLine = line.upper()
 
             #If we have the initial tab value stored,
             #Calculate the difference between the tab values of the first two rows
             #The value will be used as a scale for comparison
-            if len(tabValues) == 1 and not defaultTabValue:
+            if len(tabValues) == 1 and defaultTabValue == None:
                 defaultTabValue = float(firstCharInLine.get('x0')) - float(tabValues[-1])
 
             #Only print lines that contain numbers in them
@@ -309,17 +352,15 @@ def parseStoredPages():
                 #This calculates the difference between the distances of the current row and the one before it from the left of the page
                 #We will use it to know whether this row is tabbed more (meaning a value/category is broken down)
                 tabDifference = float(firstCharInLine.get('x0')) - float(tabValues[-1])
-                
+
                 #If this line is tabbed more than the default tab value
                 if tabDifference > (defaultTabValue + 1):
                     prefix.append(previousLine + " - ")
                     tabValues.append(firstCharInLine.get('x0'))
-
                 #If this line is tabbed less than the line before it
                 elif tabDifference < -1:
                     if prefix:
                         prefix.pop()
-                        dataWantedFound = False
                     if len(tabValues) > 1:
                         tabValues.pop()
                     while len(tabValues) > 1 and float(firstCharInLine.get('x0')) - float(tabValues[-1]) < -1:
@@ -328,26 +369,25 @@ def parseStoredPages():
                             prefix.pop()
 
             if dataWantedFound and len(tabValues) > 1 and "TOTAL" not in upperCaseLine:
-                print(''.join(prefix) + upperCaseLine)
+                cleanCombineRow(''.join(prefix) + previousLine + ' ' + upperCaseLine, "STATEMENT OF NET POSITION") if (line[0].islower() and tabDifference <= (defaultTabValue + 1)) else cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION")
             #Cash and pooled investments/cash equivalents
             elif "CASH" in upperCaseLine:
                 if "INVESTMENT" in upperCaseLine or "EQUIVALENT" in upperCaseLine:
                     if lineContainsNumbers:
-                        print("Assets - " + prefix[-1] + upperCaseLine) if prefix else print("Assets - " + upperCaseLine)
+                        cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION")
                     #Since it is always the first line in the table, its tab value will be used as an initial value for comparison with other lines
-                    #initialTabValue = firstCharInLine.get('x0')
                     if not tabValues:
                         tabValues.append(firstCharInLine.get('x0'))
                     dataWantedFound = True
             #Some have investments on a separate row
             elif upperCaseLine.startswith("INVESTMENT"):
                 if lineContainsNumbers:
-                    print("Assets - " + prefix[-1] + upperCaseLine) if prefix else print("Assets - " + upperCaseLine)
+                    cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION")
                 dataWantedFound = True
             #Capital assets being/not being depreciated
             elif "ASSETS" in upperCaseLine and ("DEPRECIATED" in upperCaseLine or "DEPRECIATION" in upperCaseLine or "DEPRECIABLE" in upperCaseLine):
                 if lineContainsNumbers:
-                    print("Assets - " + prefix[-1] + upperCaseLine) if prefix else print("Assets - " + upperCaseLine)
+                    cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION")
                 dataWantedFound = True
             #Sometimes capital assets are broken down
             elif "CAPITAL" in upperCaseLine and "ASSETS" in upperCaseLine and not lineContainsNumbers:
@@ -355,49 +395,46 @@ def parseStoredPages():
             #Total assets
             elif upperCaseLine.startswith("TOTAL ASSETS"):
                 if lineContainsNumbers:
-                    print("Assets - " + upperCaseLine)
+                   cleanCombineRow(upperCaseLine, "STATEMENT OF NET POSITION")
                 dataWantedFound = True
             #Some formats have "due within one year:" broken down, if so print the rows under
             elif ("DUE" in upperCaseLine and "YEAR" in upperCaseLine) or ("CURRENT" in upperCaseLine and "LIABILITIES" in upperCaseLine):
                 if lineContainsNumbers:
-                    print("Liabilities - " + prefix[-1] + upperCaseLine) if prefix else print("Liabilities - " + upperCaseLine)
+                    cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION") if 'TOTAL' not in upperCaseLine else cleanCombineRow(upperCaseLine, "STATEMENT OF NET POSITION")
                 dataWantedFound = True
             #Total liabilities
             elif upperCaseLine.startswith("TOTAL LIABILITIES"):
                 if lineContainsNumbers:
-                    print("Liabilities - " + upperCaseLine)
+                    cleanCombineRow(upperCaseLine, "STATEMENT OF NET POSITION")
                 dataWantedFound = True
             elif "NET" in upperCaseLine:
                 #Total net position
                 if upperCaseLine.startswith("TOTAL NET POSITION"):
                     if lineContainsNumbers:
-                        print(upperCaseLine)
+                        cleanCombineRow(upperCaseLine, "STATEMENT OF NET POSITION")
                     dataWantedFound = True
                 #Net pension liability
                 if "PENSION" in upperCaseLine and "LIABILITY" in upperCaseLine:
                     if lineContainsNumbers:
-                        print("Liabilities - " + prefix[-1] + upperCaseLine) if prefix else print("Liabilities - " + upperCaseLine)
+                        cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION")
                     dataWantedFound = True
                 #Postemployment benefits or OPEB
                 elif (("OTHER" in upperCaseLine and "POSTEMPLOYMENT" in upperCaseLine and "BENEFITS" in upperCaseLine) or "OPEB" in upperCaseLine) and "LIABILITY" in upperCaseLine:
                     if lineContainsNumbers:
-                        print("Liabilities - " + prefix[-1] + upperCaseLine) if prefix else print("Liabilities - " + upperCaseLine)
+                        cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION")
                     dataWantedFound = True
                 #Net investment in capital assets
                 elif "INVESTMENT" in upperCaseLine and "CAPITAL" in upperCaseLine and "ASSET" in upperCaseLine:
                     if lineContainsNumbers:
-                        print("Net position - " + prefix[-1] + upperCaseLine) if prefix else print("Net position - " + upperCaseLine)
+                        cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION")
                     dataWantedFound = True
             #Unrestricted (deficit)
             elif "UNRESTRICTED" in upperCaseLine:
                 #if lineContainsNumbers:
-                print("Net position - " + prefix[-1] + upperCaseLine) if prefix else print("Net position - " + upperCaseLine)
+                cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF NET POSITION")
                 dataWantedFound = True
             else:
                 dataWantedFound = False
 
             #Remove the numbers, commas, and $ symbol and store the line for comparison in next loop
-            previousLine = ((re.sub('[,-]', '', (re.sub('\d', '', line)))).replace('$','')).strip()
-            if firstCharInLine:
-                previousFirstChar = firstCharInLine
-                
+            previousLine = ((re.sub('[,-]', '', (re.sub('\d', '', upperCaseLine)))).replace('$','')).strip()
