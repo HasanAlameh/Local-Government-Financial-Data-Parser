@@ -33,7 +33,7 @@ def getCurrentYear():
 #write to CSV func, manipulates with the dataframe
 def conv_to_csv():
     global mainDF
-    saveCSVfilepath = r'./parseRESULT.csv'
+    saveCSVfilepath = r'./newOutput.csv'
     mainDF.to_csv(saveCSVfilepath, index=False)
     print("\n\nMESSAGE: Your csv file is ready, go to " + saveCSVfilepath + " to take a look at!")
     return saveCSVfilepath

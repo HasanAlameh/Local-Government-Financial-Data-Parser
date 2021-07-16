@@ -438,3 +438,86 @@ def parseStoredPages():
 
             #Remove the numbers, commas, and $ symbol and store the line for comparison in next loop
             previousLine = ((re.sub('[,-]', '', (re.sub('\d', '', upperCaseLine)))).replace('$','')).strip()
+
+
+
+
+
+
+
+
+
+
+
+#Statement of net position
+    for page in statementOfActivitiesPages:
+        previousLine = None
+        prefix = []
+        extractedText = page.extract_text(y_tolerance=5)
+        extractedText = unicodedata.normalize('NFKD', extractedText)
+        #extractedText = re.sub('\(.*?\)','', extractedText)
+        splitText = extractedText.split('\n')
+        #page.chars is a list of the page's charachters, each character in the list is a dictionary with multiple keys
+        #So we can extract the text values from the dictionaries into a list of chars
+        pageChars = []
+        for charObject in page.chars:
+            #Extract the text key from the dictionary since we won't need the other properties
+            pageChars.append(charObject.get('text'))
+
+        for line in splitText:
+            #Find the index of the matched line in page.chars, will be used to get the tab value
+            splitCharacters = [x for x in line[0:10]]
+            for i, j in enumerate(page.chars):
+                 if splitCharacters == pageChars[i:i+len(splitCharacters)]:
+                    firstCharInLine = page.chars[i]
+            
+            line = (line.replace('$', '')).replace('\u2010', '-')
+            upperCaseLine = line.upper()
+
+            #If we have the initial tab value stored,
+            #Calculate the difference between the tab values of the first two rows
+            #The value will be used as a scale for comparison
+            if len(tabValues) == 1 and defaultTabValue == None:
+                defaultTabValue = float(firstCharInLine.get('x0')) - float(tabValues[-1])
+
+            #Only print lines that contain numbers in them
+            lineContainsNumbers = bool(re.search(r'-?\d+', re.sub('\(.*?\)','', upperCaseLine)))
+
+            if tabValues:
+                #This calculates the difference between the distances of the current row and the one before it from the left of the page
+                #We will use it to know whether this row is tabbed more (meaning a value/category is broken down)
+                tabDifference = float(firstCharInLine.get('x0')) - float(tabValues[-1])
+
+                #If this line is tabbed more than the default tab value
+                if tabDifference > (defaultTabValue + 1):
+                    prefix.append(previousLine + " - ")
+                    tabValues.append(firstCharInLine.get('x0'))
+                #If this line is tabbed less than the line before it
+                elif tabDifference < -1:
+                    if prefix:
+                        prefix.pop()
+                    if len(tabValues) > 1:
+                        tabValues.pop()
+                    while len(tabValues) > 1 and float(firstCharInLine.get('x0')) - float(tabValues[-1]) < -1:
+                        tabValues.pop()
+                        if prefix:
+                            prefix.pop()
+
+            if dataWantedFound and len(tabValues) > 1 and "total" not in upperCaseLine:
+                cleanCombineRow(''.join(prefix) + previousLine + ' ' + upperCaseLine, "STATEMENT OF ACTIVITES") if (line[0].islower() and tabDifference <= (defaultTabValue + 1)) else cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF ACTIVITES")
+            #Cash and pooled investments/cash equivalents
+            elif "expenses" in upperCaseLine:
+                if "INVESTMENT" in upperCaseLine or "EQUIVALENT" in upperCaseLine:
+                    if lineContainsNumbers:
+                        cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF ACTIVITES")
+                    #Since it is always the first line in the table, its tab value will be used as an initial value for comparison with other lines
+                    if not tabValues:
+                        tabValues.append(firstCharInLine.get('x0'))
+                    dataWantedFound = True
+         
+            else:
+                dataWantedFound = False
+
+            #Remove the numbers, commas, and $ symbol and store the line for comparison in next loop
+            previousLine = ((re.sub('[,-]', '', (re.sub('\d', '', upperCaseLine)))).replace('$','')).strip()
+
