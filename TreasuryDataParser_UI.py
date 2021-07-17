@@ -33,7 +33,7 @@ def run_prog():
     lbl2.pack()
 
 def open_file():
-    filepath = 'parseRESULT.csv'
+    filepath = 'newOutput.csv'
     if platform.system() == 'Darwin':       # macOS
         subprocess.call(('open', filepath))
     elif platform.system() == 'Windows':    # Windows

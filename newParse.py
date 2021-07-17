@@ -1,13 +1,10 @@
 import re
-from subprocess import REALTIME_PRIORITY_CLASS
 from tkinter.constants import WORD
 import pdfplumber
 import pandas as pd
 from collections import namedtuple
 from datetime import date
 import csv
-from pdfplumber import container
-from pdfplumber import page
 from pdfplumber.utils import WordExtractor
 import unicodedata
 
@@ -116,7 +113,7 @@ def file_parse(file):
                                 if previousPageAdded:
                                     previousPageAdded = False
                                 else:
-                                    #Look for duplicates
+                                    #Look for duplucates
                                     if not any(findPage == previousPage for findPage in statementOfNetPositionProprietaryFunds):
                                         statementOfNetPositionProprietaryFunds.append(previousPage)
                                     previousPageAdded = True
@@ -132,7 +129,7 @@ def file_parse(file):
 
                     #Find statement of activities pages
                     elif (line == "STATEMENT OF ACTIVITIES" or line == "STATEMENT OF ACTIVITIES (CONTINUED)") and "RECONCILIATION" not in extractedText:
-                        #Some formats (like Livingston County 2019) have the row titles on a previous page with no page header
+                        #Some formats (like Livingston 2019) have the row titles on a previous page with no page header
                         if previousPageAdded:
                                     previousPageAdded = False
                         else:
@@ -229,6 +226,8 @@ def file_parse(file):
 def cleanCombineRow(line, page_header = ""):
     numberStart = 0
     formattedRow = []
+    #line = (re.sub('\(.*?\)','', line)).strip()
+    #line = (line.replace('(NOTE', '')).strip()
     noteIndex = line.find('(NOTE')
     while noteIndex > 0:
         stringToList = list(line)
@@ -293,18 +292,12 @@ def cleanCombineRow(line, page_header = ""):
 
     [x.encode('utf-8') for x in formattedRow]
 
-    #Some columns that have a large number (ex 1,225,501) will be extracted as 1 ,225,501. This looks for single-digit elements and joins them to the next element
     if len(formattedRow) > 8:
         for index, elmnt in enumerate(formattedRow):
             if len(elmnt) == 1 and elmnt[0].isdigit():
                 formattedRow[index + 1] = formattedRow[index] + formattedRow[index + 1]
                 formattedRow.pop(index)
-    
-    #Do not place the values of pages under the columns of other pages
-    #This fills in empty values to the row so it "skips" over columns when writing to the CSV
-    if page_header == 'STATEMENT OF NET POSITION' or ('PRIMARY GOV' in page_header and len (formattedRow) <= 8):
-        formattedRow[4:4] = ['', '', '', '', '']
-        formattedRow[2] = (formattedRow[2].replace('PRIMARY GOV', '')).strip()
+                break
 
     print(formattedRow)
     with open('newOutput.csv', 'a', newline='') as outputFile:
@@ -320,16 +313,14 @@ def parseStoredPages():
     tabValues = []
     defaultTabValue = None
     firstCharInLine = None
-    previousLine = None
-    prefix = []
-    linesLocations = []
-    endOfPages = False
 
-    """""
     #Statement of net position
     for page in statementOfNetPositionPages:
+        previousLine = None
+        prefix = []
         extractedText = page.extract_text(y_tolerance=5)
         extractedText = unicodedata.normalize('NFKD', extractedText)
+        #extractedText = re.sub('\(.*?\)','', extractedText)
         splitText = extractedText.split('\n')
         #page.chars is a list of the page's charachters, each character in the list is a dictionary with multiple keys
         #So we can extract the text values from the dictionaries into a list of chars
@@ -447,99 +438,86 @@ def parseStoredPages():
 
             #Remove the numbers, commas, and $ symbol and store the line for comparison in next loop
             previousLine = ((re.sub('[,-]', '', (re.sub('\d', '', upperCaseLine)))).replace('$','')).strip()
-    """
-    prefix.clear()
+
+
+
+
+
+
+
+
+
+
+
+#Statement of net position
     for page in statementOfActivitiesPages:
-        currentLinePosition = 0
-        additionFlag = False
-        exitFlag = False
-
-        if endOfPages:
-            break
-
+        previousLine = None
+        prefix = []
         extractedText = page.extract_text(y_tolerance=5)
         extractedText = unicodedata.normalize('NFKD', extractedText)
+        #extractedText = re.sub('\(.*?\)','', extractedText)
         splitText = extractedText.split('\n')
-
-        #Make sure we are not on the wrong page
-        if ('Statement of' in extractedText and 'Statement of Activities' not in extractedText) or 'Balance Sheet' in extractedText:
-            continue
-        
-        #If we go to the next page and we have values in linesLocations
-        #That means we have one page with rows and the other with values
-        if linesLocations:
-            for line in splitText:
-                if not linesLocations:
-                    break
-                line = (line.replace('$', '')).replace('\u2010', '-')
-                lineContainsNumbers = bool(re.search(r'-?\d+', line))
-                #Only rows that have numbers are counted (to match the ones from the previous page)
-                if lineContainsNumbers and documentDate not in line.upper():
-                    if linesLocations[0] == currentLinePosition:
-                        #When a match is found, clean it and add to CSV
-                        cleanCombineRow(prefix[0] + line, 'STATEMENT OF ACTIVITIES PRIMARY GOV')
-                        prefix.pop(0)
-                        linesLocations.pop(0)
-                    currentLinePosition += 1
-            exitFlag = True
-        
-        if exitFlag:
-            return
-
-        #Every line with a lowercase first letter is a continuation of the line before it
-        #First go through the text and join separated sentences
-        for index, line in enumerate(splitText):
-            line = line.strip()
-            splitText[index] = line
-            if len(line) > 2 and line[0].islower():
-                lineIndex = splitText.index(line)
-                splitText[lineIndex - 1] = splitText[lineIndex - 1] + ' ' + splitText[lineIndex]
-                splitText.pop(lineIndex)
+        #page.chars is a list of the page's charachters, each character in the list is a dictionary with multiple keys
+        #So we can extract the text values from the dictionaries into a list of chars
+        pageChars = []
+        for charObject in page.chars:
+            #Extract the text key from the dictionary since we won't need the other properties
+            pageChars.append(charObject.get('text'))
 
         for line in splitText:
-            #Remove $ characters for better comparison
+            #Find the index of the matched line in page.chars, will be used to get the tab value
+            splitCharacters = [x for x in line[0:10]]
+            for i, j in enumerate(page.chars):
+                 if splitCharacters == pageChars[i:i+len(splitCharacters)]:
+                    firstCharInLine = page.chars[i]
+            
             line = (line.replace('$', '')).replace('\u2010', '-')
             upperCaseLine = line.upper()
 
-            if ':' in line:
-                continue
+            #If we have the initial tab value stored,
+            #Calculate the difference between the tab values of the first two rows
+            #The value will be used as a scale for comparison
+            if len(tabValues) == 1 and defaultTabValue == None:
+                defaultTabValue = float(firstCharInLine.get('x0')) - float(tabValues[-1])
 
+            #Only print lines that contain numbers in them
             lineContainsNumbers = bool(re.search(r'-?\d+', re.sub('\(.*?\)','', upperCaseLine)))
 
-            #We only consider lines that have values in our iteration
-            if lineContainsNumbers or additionFlag:
-                currentLinePosition += 1
+            if tabValues:
+                #This calculates the difference between the distances of the current row and the one before it from the left of the page
+                #We will use it to know whether this row is tabbed more (meaning a value/category is broken down)
+                tabDifference = float(firstCharInLine.get('x0')) - float(tabValues[-1])
 
-            #Make sure we are extracting from Program Revenues column
-            if 'TOTAL GOVERNMENTAL ACTIVITIES' in upperCaseLine or 'TOTAL BUSINESS-TYPE ACTIVITIES' in upperCaseLine or 'TOTAL PRIMARY GOVERNMENT' in upperCaseLine:
-                cleanCombineRow(upperCaseLine, 'STATEMENT OF ACTIVITIES')
-            elif 'TAX' in upperCaseLine or 'PROPERTY' in upperCaseLine:
-                if lineContainsNumbers:
-                    cleanCombineRow(upperCaseLine, 'STATEMENT OF ACTIVITIES PRIMARY GOV')
-                else:
-                    #If one page has the column names while the numbers are on the other, save the location of the line to grab the values from the second page
-                    linesLocations.append(currentLinePosition)
-                    prefix.append(upperCaseLine)
-                    if not additionFlag:
-                        additionFlag = True
-            elif ('GRANTS' in upperCaseLine and 'CONTRIBUTIONS' in upperCaseLine) or ('STATE' in upperCaseLine and 'REVENUE' in upperCaseLine) or ('STATE' in upperCaseLine and 'GRANTS' in upperCaseLine):
-                if lineContainsNumbers:
-                    cleanCombineRow(upperCaseLine, "STATEMENT OF ACTIVITIES PRIMARY GOV")
-                else:
-                    
-                    linesLocations.append(currentLinePosition)
-                    prefix.append(upperCaseLine)
-            elif 'TOTAL' in upperCaseLine and 'GENERAL' in upperCaseLine and 'REVENUE' in upperCaseLine:
-                if lineContainsNumbers:
-                    cleanCombineRow(upperCaseLine, 'STATEMENT OF ACTIVITIES PRIMARY GOV')
-                else:
-                    linesLocations.append(currentLinePosition)
-                    prefix.append(upperCaseLine)
-            elif 'CHANGE' in upperCaseLine and 'NET' in upperCaseLine and 'POSITION' in upperCaseLine:
-                if lineContainsNumbers:
-                    cleanCombineRow(upperCaseLine, 'STATEMENT OF ACTIVITIES PRIMARY GOV')
-                    endOfPages = True
-                else:
-                    linesLocations.append(currentLinePosition)
-                    prefix.append(upperCaseLine)
-                
+                #If this line is tabbed more than the default tab value
+                if tabDifference > (defaultTabValue + 1):
+                    prefix.append(previousLine + " - ")
+                    tabValues.append(firstCharInLine.get('x0'))
+                #If this line is tabbed less than the line before it
+                elif tabDifference < -1:
+                    if prefix:
+                        prefix.pop()
+                    if len(tabValues) > 1:
+                        tabValues.pop()
+                    while len(tabValues) > 1 and float(firstCharInLine.get('x0')) - float(tabValues[-1]) < -1:
+                        tabValues.pop()
+                        if prefix:
+                            prefix.pop()
+
+            if dataWantedFound and len(tabValues) > 1 and "total" not in upperCaseLine:
+                cleanCombineRow(''.join(prefix) + previousLine + ' ' + upperCaseLine, "STATEMENT OF ACTIVITES") if (line[0].islower() and tabDifference <= (defaultTabValue + 1)) else cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF ACTIVITES")
+            #Cash and pooled investments/cash equivalents
+            elif "expenses" in upperCaseLine:
+                if "INVESTMENT" in upperCaseLine or "EQUIVALENT" in upperCaseLine:
+                    if lineContainsNumbers:
+                        cleanCombineRow(''.join(prefix) + upperCaseLine, "STATEMENT OF ACTIVITES")
+                    #Since it is always the first line in the table, its tab value will be used as an initial value for comparison with other lines
+                    if not tabValues:
+                        tabValues.append(firstCharInLine.get('x0'))
+                    dataWantedFound = True
+         
+            else:
+                dataWantedFound = False
+
+            #Remove the numbers, commas, and $ symbol and store the line for comparison in next loop
+            previousLine = ((re.sub('[,-]', '', (re.sub('\d', '', upperCaseLine)))).replace('$','')).strip()
+
