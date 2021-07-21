@@ -305,7 +305,8 @@ def cleanCombineRow(line, page_header = ""):
     if page_header == 'STATEMENT OF NET POSITION' or ('PRIMARY GOV' in page_header and len (formattedRow) <= 8):
         formattedRow[4:4] = ['', '', '', '', '']
         formattedRow[2] = (formattedRow[2].replace('PRIMARY GOV', '')).strip()
-    elif page_header == 'BALANCE SHEET - GOVERNMENTAL FUNDS':
+    #For the balance sheet- gov funds, we only want the General Fund and Totals columns (which are the first and last columns), so remove everything in between
+    elif page_header == 'BALANCE SHEET - GOVERNMENTAL FUNDS' or page_header == 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS':
         formattedRow[5] = formattedRow[-1]
         del formattedRow[6:len(formattedRow)]
         formattedRow[4:4] = ['', '', '', '', '', '', '', '', '']
@@ -342,6 +343,16 @@ def parseStoredPages():
         for charObject in page.chars:
             #Extract the text key from the dictionary since we won't need the other properties
             pageChars.append(charObject.get('text'))
+        
+        #Every line with a lowercase first letter is a continuation of the line before it
+        #First go through the text and join separated sentences
+        for index, line in enumerate(splitText):
+            line = line.strip()
+            splitText[index] = line
+            if len(line) > 2 and line[0].islower() or (not line[0].isalnum() and line[1].islower()):
+                lineIndex = splitText.index(line)
+                splitText[lineIndex - 1] = splitText[lineIndex - 1] + ' ' + splitText[lineIndex]
+                splitText.pop(lineIndex)
 
         for line in splitText:
             #Find the index of the matched line in page.chars, will be used to get the tab value
@@ -498,7 +509,7 @@ def parseStoredPages():
         for index, line in enumerate(splitText):
             line = line.strip()
             splitText[index] = line
-            if len(line) > 2 and line[0].islower():
+            if len(line) > 2 and line[0].islower() or (not line[0].isalnum() and line[1].islower()):
                 lineIndex = splitText.index(line)
                 splitText[lineIndex - 1] = splitText[lineIndex - 1] + ' ' + splitText[lineIndex]
                 splitText.pop(lineIndex)
@@ -550,17 +561,17 @@ def parseStoredPages():
                     linesLocations.append(currentLinePosition)
                     prefix.append(upperCaseLine)
     
-    """
+    
     prefix.clear()
     tabValues.clear()
     linesLocations.clear()
     linesToAppend = []
     firstCharInLine = None
 
+    #Balance Sheet - Governmental Funds
     for page in balanceSheetGovFundsPages:
         currentLinePosition = 0
         pageChars = []
-        dataWantedFound = False
         totalsOnSamePage = False
         additionFlag = False
         extractedText = page.extract_text(y_tolerance=5)
@@ -572,7 +583,7 @@ def parseStoredPages():
         for index, line in enumerate(splitText):
             line = line.strip()
             splitText[index] = line
-            if len(line) > 2 and line[0].islower():
+            if len(line) > 2 and line[0].islower() or (not line[0].isalnum() and line[1].islower()):
                 lineIndex = splitText.index(line)
                 splitText[lineIndex - 1] = splitText[lineIndex - 1] + ' ' + splitText[lineIndex]
                 splitText.pop(lineIndex)
@@ -585,7 +596,6 @@ def parseStoredPages():
                 totalsOnSamePage = True
 
         if linesLocations:
-            print(linesLocations)
             if totalsOnSamePage:
                 for line in splitText:
                     if not linesLocations:
@@ -596,19 +606,11 @@ def parseStoredPages():
                     if lineContainsNumbers and documentDate not in line.upper() and 'EXHIBIT' not in line.upper():
                         if linesLocations[0] == currentLinePosition:
                             #When a match is found, clean it and add to CSV
-                            print('appending: ' + line)
                             cleanCombineRow(linesToAppend[0] + ' ' + line, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
                             linesToAppend.pop(0)
                             linesLocations.pop(0)
                         currentLinePosition += 1
-
         for line in splitText:
-            #Find the index of the matched line in page.chars, will be used to get the tab value
-            splitCharacters = [x for x in (line[0:10]).replace(' ', '')]
-            for i, j in enumerate(page.chars):
-                if splitCharacters == pageChars[i:i+len(splitCharacters)]:
-                    firstCharInLine = page.chars[i]
-
             #Remove $ characters for better comparison
             line = (line.replace('$', '')).replace('\u2010', '-')
             upperCaseLine = line.upper()
@@ -617,18 +619,6 @@ def parseStoredPages():
             lineContainsNumbers = bool(re.search(r'-?\d+', re.sub('\(.*?\)','', upperCaseLine))) or (line.strip()).endswith('-')
             if additionFlag and lineContainsNumbers and documentDate not in upperCaseLine and 'EXHIBIT' not in upperCaseLine:
                 currentLinePosition += 1
-
-            if dataWantedFound:
-                if firstCharInLine.get('x0') - tabValues[-1] >= 1:
-                    if lineContainsNumbers:
-                        if totalsOnSamePage:
-                            cleanCombineRow(''.join(prefix) + upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
-                        else:
-                            linesToAppend.append(upperCaseLine)
-                    else:
-                        prefix.append(upperCaseLine + ' - ')
-                else:
-                    dataWantedFound = False
         
             if 'CASH' in upperCaseLine or 'INVESTMENT' in upperCaseLine:
                 if totalsOnSamePage:
@@ -637,21 +627,18 @@ def parseStoredPages():
                     if not additionFlag:
                         currentLinePosition = 0
                         additionFlag = True
-                    print('appended: ' + upperCaseLine)
                     linesLocations.append(currentLinePosition)
                     linesToAppend.append(upperCaseLine)
             elif 'TOTAL' in upperCaseLine and ('LIABILITIES' in upperCaseLine or 'ASSETS' in upperCaseLine or 'FUND BALANCES' in upperCaseLine):
                 if totalsOnSamePage:
                     cleanCombineRow(upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
                 else:
-                    print('appended: ' + upperCaseLine)
                     linesToAppend.append(upperCaseLine)
                     linesLocations.append(currentLinePosition)
             elif 'UNASSIGNED' in upperCaseLine:
                 if totalsOnSamePage:
-                    cleanCombineRow(upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
+                    cleanCombineRow('Fund Balances: ' + upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
                 else:
-                    print('appended: ' + upperCaseLine)
                     linesToAppend.append(upperCaseLine)
                     linesLocations.append(currentLinePosition)
             elif 'NONSPENDABLE' in upperCaseLine:
@@ -659,12 +646,144 @@ def parseStoredPages():
                     if totalsOnSamePage:
                         cleanCombineRow('Fund Balances: ' + upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
                     else:
-                        print('appended: ' + upperCaseLine)
                         linesToAppend.append(upperCaseLine)
                         linesLocations.append(currentLinePosition)
-                #If Nonspendable is found but the line has no numbers (it is broken down further)
+            elif 'RESTRICTED' in upperCaseLine:
+                if lineContainsNumbers:
+                    if totalsOnSamePage:
+                        cleanCombineRow('Fund Balances: ' + upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
+                    else:
+                        linesToAppend.append(upperCaseLine)
+                        linesLocations.append(currentLinePosition)
+            elif 'COMMITTED' in upperCaseLine:
+                if lineContainsNumbers:
+                    if totalsOnSamePage:
+                        cleanCombineRow('Fund Balances: ' + upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
+                    else:
+                        linesToAppend.append(upperCaseLine)
+                        linesLocations.append(currentLinePosition)
+            elif 'ASSIGNED' in upperCaseLine:
+                if lineContainsNumbers:
+                    if totalsOnSamePage:
+                        cleanCombineRow('Fund Balances: ' + upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
+                    else:
+                        linesToAppend.append(upperCaseLine)
+                        linesLocations.append(currentLinePosition)
+
+    """
+    prefix.clear()
+    tabValues.clear()
+    linesLocations.clear()
+    linesToAppend = []
+    firstCharInLine = None
+
+    #Statement of Revenue, Expenditures, and Changes in Fund Balances - Governmental Funds
+    for page in statementOfRevExpendAndChangesGovernmentalFundsPages:
+        currentLinePosition = 0
+        pageChars = []
+        totalsOnSamePage = False
+        additionFlag = False
+        extractedText = page.extract_text(y_tolerance=5)
+        extractedText = unicodedata.normalize('NFKD', extractedText)
+        splitText = extractedText.split('\n')
+
+        #Every line with a lowercase first letter is a continuation of the line before it
+        #First go through the text and join separated sentences
+        for index, line in enumerate(splitText):
+            line = line.strip()
+            splitText[index] = line
+            if len(line) > 2 and line[0].islower() or (not line[0].isalnum() and line[1].islower()):
+                lineIndex = splitText.index(line)
+                splitText[lineIndex - 1] = splitText[lineIndex - 1] + ' ' + splitText[lineIndex]
+                splitText.pop(lineIndex)
+    
+        #All PDFs have the Total Funds column either on the next page or the same one
+        #This checks if a line ends with the word total/totals, that way we know if the last column is the totals or not
+        if any(((anyLine.upper()).endswith('TOTAL') or (anyLine.upper()).endswith('TOTALS')) for anyLine in splitText):
+                totalsOnSamePage = True
+
+        #If we moved to a new page and we have locations of lines stored, that means the totals column is on a separate page
+        if linesLocations:
+            if totalsOnSamePage:
+                for line in splitText:
+                    if not linesLocations:
+                        break
+                    line = (line.replace('$', '')).replace('\u2010', '-')
+                    lineContainsNumbers = bool(re.search(r'-?\d+', line)) or (line.strip()).endswith('-')
+                    #Only rows that have numbers are counted (to match the ones from the previous page)
+                    if lineContainsNumbers and documentDate not in line.upper() and 'EXHIBIT' not in line.upper():
+                        if linesLocations[0] == currentLinePosition:
+                            #When a match is found, clean it and add to CSV
+                            cleanCombineRow(linesToAppend[0] + ' ' + line, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
+                            linesToAppend.pop(0)
+                            linesLocations.pop(0)
+                        currentLinePosition += 1
+        
+        for line in splitText:
+            #Remove $ characters for better comparison
+            line = (line.replace('$', '')).replace('\u2010', '-')
+            upperCaseLine = line.upper()
+
+            lineContainsNumbers = bool(re.search(r'-?\d+', re.sub('\(.*?\)','', upperCaseLine))) or (line.strip()).endswith('-')
+            if additionFlag and lineContainsNumbers and documentDate not in upperCaseLine and 'EXHIBIT' not in upperCaseLine:
+                currentLinePosition += 1
+            
+            #For this kind of page, Debt Service is the only column that may be broken down
+            #If it's broken down, it is always into two rows, Principal and Interest&Fiscal Charges
+            if dataWantedFound:
+                if 'PRINCIPAL' in upperCaseLine or 'INTEREST' in upperCaseLine:
+                    if lineContainsNumbers:
+                        if totalsOnSamePage:
+                            cleanCombineRow(''.join(prefix) + upperCaseLine, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
+                        else:
+                            linesToAppend.append(''.join(prefix) + upperCaseLine)
+                            linesLocations.append(currentLinePosition)
+                    else:
+                        prefix.append(upperCaseLine + ' - ')
+                else:
+                    dataWantedFound = False
+                    prefix.pop()
+        
+            if 'TAXES' in upperCaseLine:
+                if totalsOnSamePage:
+                    cleanCombineRow(upperCaseLine, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
+                else:
+                    if not additionFlag:
+                        currentLinePosition = 0
+                        additionFlag = True
+                    linesLocations.append(currentLinePosition)
+                    linesToAppend.append(upperCaseLine)
+            elif 'TOTAL' in upperCaseLine: #and ('REVENUE' in upperCaseLine or 'EXPENDITURE' in upperCaseLine or ('OTHER' in upperCaseLine and 'FINANCING' in upperCaseLine)):
+                if totalsOnSamePage:
+                    cleanCombineRow(upperCaseLine, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
+                else:
+                    linesToAppend.append(upperCaseLine)
+                    linesLocations.append(currentLinePosition)
+            elif 'DEBT' in upperCaseLine and 'SERVICE' in upperCaseLine:
+                if lineContainsNumbers:
+                    if totalsOnSamePage:
+                        cleanCombineRow(upperCaseLine, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
+                    else:
+                        linesToAppend.append(upperCaseLine)
+                        linesLocations.append(currentLinePosition)
+                #If Debt Service is found but the line has no numbers (it is broken down further)
                 else:
                     dataWantedFound = True
                     prefix.append(upperCaseLine + ' - ')
-                    tabValues.append(firstCharInLine.get('x0'))
+            elif 'CAPITAL' in upperCaseLine and 'OUTLAY' in upperCaseLine:
+                if lineContainsNumbers:
+                    if totalsOnSamePage:
+                        cleanCombineRow(upperCaseLine, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
+                    else:
+                        linesToAppend.append(upperCaseLine)
+                        linesLocations.append(currentLinePosition)
+            elif 'NET' in upperCaseLine and 'FUND' in upperCaseLine:
+                if lineContainsNumbers:
+                    if totalsOnSamePage:
+                        cleanCombineRow(upperCaseLine, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
+                    else:
+                        linesToAppend.append(upperCaseLine)
+                        linesLocations.append(currentLinePosition)
+        
 
+    
