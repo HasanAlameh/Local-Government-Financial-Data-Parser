@@ -20,7 +20,22 @@ municipalityName = ""
 def file_parse(file):
     global documentDate
     global municipalityName
+    global statementOfNetPositionPages 
+    global statementOfNetPositionProprietaryFunds 
+    global statementOfActivitiesPages 
+    global balanceSheetGovFundsPages 
+    global statementOfRevExpendAndChangesGovernmentalFundsPages 
+    global statementOfRevExpAndChangesProprietaryFundsPages 
+    statementOfNetPositionPages = []
+    statementOfNetPositionProprietaryFunds = []
+    statementOfActivitiesPages = []
+    balanceSheetGovFundsPages = []
+    statementOfRevExpendAndChangesGovernmentalFundsPages = []
+    statementOfRevExpAndChangesProprietaryFundsPages = []
 
+    documentDate = ""
+    municipalityName = ""
+    
     balanceSheetFound = False
     statementOfRevGovFundsFound = False
     netPositionProprietaryFundsFound = False
