@@ -5,6 +5,8 @@ import pdfplumber
 import csv
 import unicodedata
 
+from pdfplumber.utils import curve_to_edges
+
 #Each of our required statements will have their corresponding pages stored
 statementOfNetPositionPages = []
 statementOfNetPositionProprietaryFunds = []
@@ -20,22 +22,7 @@ municipalityName = ""
 def file_parse(file):
     global documentDate
     global municipalityName
-    global statementOfNetPositionPages 
-    global statementOfNetPositionProprietaryFunds 
-    global statementOfActivitiesPages 
-    global balanceSheetGovFundsPages 
-    global statementOfRevExpendAndChangesGovernmentalFundsPages 
-    global statementOfRevExpAndChangesProprietaryFundsPages 
-    statementOfNetPositionPages = []
-    statementOfNetPositionProprietaryFunds = []
-    statementOfActivitiesPages = []
-    balanceSheetGovFundsPages = []
-    statementOfRevExpendAndChangesGovernmentalFundsPages = []
-    statementOfRevExpAndChangesProprietaryFundsPages = []
 
-    documentDate = ""
-    municipalityName = ""
-    
     balanceSheetFound = False
     statementOfRevGovFundsFound = False
     netPositionProprietaryFundsFound = False
@@ -65,7 +52,6 @@ def file_parse(file):
 
                 #Each line is placed as a list item
                 splitText = extractedText.split('\n')
-
                 
                 #If any page is appended, always append the following one just in case
                 if balanceSheetFound:
@@ -752,7 +738,7 @@ def parseStoredPages():
                         additionFlag = True
                     linesLocations.append(currentLinePosition)
                     linesToAppend.append(upperCaseLine) if not pageIndex == len(balanceSheetGovFundsPages)-1 else cleanCombineRow(upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
-            elif 'TOTAL' in upperCaseLine and ('LIABILITIES' in upperCaseLine or 'ASSETS' in upperCaseLine or 'FUND BALANCES' in upperCaseLine):
+            elif 'TOTAL' in upperCaseLine and ('LIABILITIES' in upperCaseLine or 'ASSET' in upperCaseLine or 'FUND BALANCE' in upperCaseLine):
                 if totalsOnSamePage:
                     cleanCombineRow(upperCaseLine, 'BALANCE SHEET - GOVERNMENTAL FUNDS')
                 else:
@@ -838,12 +824,16 @@ def parseStoredPages():
 
         #If we moved to a new page and we have locations of lines stored, that means the totals column is on a separate page
         if linesLocations:
+            print(linesLocations)
             if totalsOnSamePage:
                 for line in splitText:
                     if not linesLocations:
                         break
                     line = (line.replace('$', '')).replace('\u2010', '-')
                     lineContainsNumbers = len(line) > 3 and (bool(re.search(r'-?\d+', line)) or (line.strip()).endswith('-') or line.count(',') > 3 or (line.replace(')', ''))[-1].isdigit())
+                    if lineContainsNumbers and not additionFlag:
+                        currentLinePosition = 0
+                        additionFlag = True
                     #Only rows that have numbers are counted (to match the ones from the previous page)
                     if lineContainsNumbers and documentDate not in line.upper() and 'EXHIBIT' not in line.upper() and not any(line.upper() == headerLine for headerLine in page_headers):
                         if linesLocations[0] == currentLinePosition:
@@ -887,16 +877,16 @@ def parseStoredPages():
                     dataWantedFound = False
                     if prefix:
                         prefix.pop()
-        
+
+            if lineContainsNumbers and not additionFlag and documentDate not in upperCaseLine:
+                currentLinePosition = 0
+                additionFlag = True
+
             if 'TAXES' in upperCaseLine or 'PROPERTY' in upperCaseLine:
                 if lineContainsNumbers:
                     if totalsOnSamePage:
                         cleanCombineRow(upperCaseLine, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
                     else:
-                        if not additionFlag:
-                            currentLinePosition = 0
-                            additionFlag = True
-                        
                         linesLocations.append(currentLinePosition)
                         linesToAppend.append(upperCaseLine) if not pageIndex == len(statementOfRevExpendAndChangesGovernmentalFundsPages)-1 else cleanCombineRow(upperCaseLine, 'STATEMENT OF REVENUES, EXPENDITURES, AND CHANGES IN FUND BALANCES - GOV FUNDS')
             elif 'TOTAL' in upperCaseLine: #and ('REVENUE' in upperCaseLine or 'EXPENDITURE' in upperCaseLine or ('OTHER' in upperCaseLine and 'FINANCING' in upperCaseLine)):
