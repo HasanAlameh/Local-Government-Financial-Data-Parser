@@ -47,9 +47,13 @@ def file_parse(file):
     previousPage = None
     previousPageAdded = False
     textFound = False
+    pdfHasContent = False
 
     #Specifying that the date format used is always (mmmm dd, yyyy)
     dateFilter = re.compile(r'[a-zA-Z]+\s\d\d[,]\s\d\d\d\d')
+    
+    #Log: Display parsing start message
+    print("Attempting to read \"" + file + "\"...")
     
     #Read the PDF file
     with pdfplumber.open(file) as pdf:
@@ -62,6 +66,8 @@ def file_parse(file):
 
             #If extracted text is not empty
             if extractedText:
+                pdfHasContent = True
+                
                 #In case some PDFs (like Saginaw County's) use unicode characters that mess up the comparisons
                 extractedText = unicodedata.normalize('NFKD', extractedText)
                 extractedText = extractedText.upper().replace('\u2010', '-')
@@ -250,6 +256,13 @@ def file_parse(file):
             print(textFromPage)
         """
         parseStoredPages()
+        
+        #Log: Display parse completion message
+        if (not pdfHasContent):
+            print("Error: PDF has no readable content. Program only accepts readable audit PDFs.\n")
+        else:
+            print("Data parsing complete. Audit data successfully added to CSV file.\n")
+            
         return file
 
 #Clean an extracted row & combine its headers 
