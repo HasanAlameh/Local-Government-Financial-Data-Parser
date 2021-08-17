@@ -441,7 +441,7 @@ def cleanCombineRow(line, page_header = ""):
 
     print('Outputting row to CSV: ' + ' | '.join(str(elmnt) for elmnt in formattedRow))
 
-    with open('newOutput.csv', 'a', newline='') as outputFile:
+    with open('output.csv', 'a', newline='') as outputFile:
         #Append the formatted row to the end of the file
         writer = csv.writer(outputFile)
         writer.writerow(formattedRow)
