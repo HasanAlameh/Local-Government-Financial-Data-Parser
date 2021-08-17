@@ -132,6 +132,7 @@ def file_parse(file):
                         if not documentDate:
                             if len(dateFilter.findall(extractedText)):
                                 documentDate = dateFilter.findall(extractedText)[0]
+                                print('Found document date: ' + str(documentDate))
  
                         #If the municipality name has not been found yet
                         if not municipalityName:
@@ -140,6 +141,7 @@ def file_parse(file):
                                 municipalityName = splitText[0].strip().replace(', MICHIGAN', '').replace(', Michigan', '')
                             else:
                                 municipalityName = splitText[1].strip().replace(', MICHIGAN', '').replace(', Michigan', '')
+                            print('Found Municipality name: ' + str(municipalityName))
 
                         #If statement of net position - proprietary funds is found, place the page in the corresponding list
                         if "PROPRIETARY FUND" in extractedText:
@@ -437,8 +439,7 @@ def cleanCombineRow(line, page_header = ""):
             elif str(element).lstrip('-').isdigit() and int(element) < 0 and ')' not in str(element):
                 formattedRow[index] = '(' + str(formattedRow[index]).replace('-', '') + ')'
 
-    #For debugging, print row
-    print(formattedRow)
+    print('Outputting row to CSV: ' + ' | '.join(str(elmnt) for elmnt in formattedRow))
 
     with open('newOutput.csv', 'a', newline='') as outputFile:
         #Append the formatted row to the end of the file
@@ -460,6 +461,7 @@ def parseStoredPages():
 
     
     #Statement of net position
+    print('Parsing Statement of Net Position Pages. ' + str(len(statementOfNetPositionPages)) + ' pages found.')
     for page in statementOfNetPositionPages:
         extractedText = page.extract_text(y_tolerance=5)
         extractedText = unicodedata.normalize('NFKD', extractedText)
@@ -594,6 +596,7 @@ def parseStoredPages():
     prefix.clear()
 
     #Statement of Activities
+    print('Parsing Statement of Activities Pages. ' + str(len(statementOfActivitiesPages)) + ' pages found.')
     for page in statementOfActivitiesPages:
         currentLinePosition = 0
         additionFlag = False
@@ -696,6 +699,7 @@ def parseStoredPages():
     firstCharInLine = None
 
     #Balance Sheet - Governmental Funds
+    print('Parsing Balance Sheet Pages. ' + str(len(balanceSheetGovFundsPages)) + ' pages found.')
     for pageIndex, page in enumerate(balanceSheetGovFundsPages):
         currentLinePosition = 0
         pageChars = []
@@ -818,7 +822,7 @@ def parseStoredPages():
     firstCharInLine = None
 
     #Statement of Revenue, Expenditures, and Changes in Fund Balances - Governmental Funds
-
+    print('Parsing Statement of Revenue - Gov Funds Pages. ' + str(len(statementOfRevExpendAndChangesGovernmentalFundsPages)) + ' pages found.')
     for pageIndex, page in enumerate(statementOfRevExpendAndChangesGovernmentalFundsPages):
         currentLinePosition = 0
         pageChars = []
@@ -967,6 +971,7 @@ def parseStoredPages():
     #   2. The Total column can be the second-to-last column (before the Internal Service Funds column)
     #   3. The Total column can be on a separate page (one page has the row names and the other has the values)
     #   4. The Total column is not included at all, meaning we will have to add up all the columns to calculate it
+    print('Parsing Statement of Net Position - Proprietary Funds Pages. ' + str(len(statementOfNetPositionProprietaryFunds)) + ' pages found.')
     for page in statementOfNetPositionProprietaryFunds:
         totalsOnSamePage = False
         additionFlag = False
@@ -1147,6 +1152,7 @@ def parseStoredPages():
     internalServiceFundsInPage = False
 
     #Statement of Revenues, Expenses, and Changes in Fund Net Position - Proprietary Funds
+    print('Parsing Statement of Revenue - Proprietary Funds Pages. ' + str(len(statementOfRevExpAndChangesProprietaryFundsPages)) + ' pages found.')
     for page in statementOfRevExpAndChangesProprietaryFundsPages:
         totalsOnSamePage = False
         additionFlag = False
