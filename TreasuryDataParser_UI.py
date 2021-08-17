@@ -22,7 +22,7 @@ def program_instructions():
     print("-  Browse Button - This is used to navigate to your PDF file & get the path.")
     print("-  Submit Button - This is used to initiate the parser.")
     print("-  Open Button - This is used to open the CSV file after the data has been parsed and transferred into it.")
-    print("-  NOTE: The CSV file is rewritten everytime the tool is ran, \nwhich means the old data is wiped out and new data is written based on the PDF uploaded.\nTherefore, it's best to save the CSV elsewhere before trying a second run.")
+    print("-  NOTE: Audit data is appended to the bottom of the CSV file for each audit PDF the tool is run for.")
     print("==============================================================================================")
 def run_prog():
     # This is your function maitra use the folder_path variable to get filename
