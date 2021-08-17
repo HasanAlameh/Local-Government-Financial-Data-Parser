@@ -119,14 +119,15 @@ def file_parse(file):
                     continue
                 
                 #Skip table of contents pages
-                if "TABLE OF CONTENTS" in extractedText or any(line == "CONTENTS" for line in splitText) or not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]) or ('MANAGEMENT' in extractedText and 'DISCUSSION' in extractedText and 'ANALYSIS' in extractedText):
+                if "TABLE OF CONTENTS" in extractedText or any(line == "CONTENTS" for line in splitText) or any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]) or ('MANAGEMENT' in extractedText and 'DISCUSSION' in extractedText and 'ANALYSIS' in extractedText):
                    continue
 
                 for line in splitText:
-                    #Some formats have double spacing between words, this makes comparison work for those formats
+                    #Some formats use 2 spaces between words for some reason
+                    #Removing the spaces from the line completely ensures we don't have issues with comparison
                     line = line.replace(' ', '')
                     #Find Statement of Net Position pages
-                    if (line.startswith("STATEMENTOFNETPOSITION") or line.endswith("STATEMENTOFNETPOSITION")) and not any(line.replace(' ', '').startswith("FIDUCIARYFUND") for line in splitText) and not any(textLine.replace(' ', '').strip().startswith('RECONCILIATIONOF') for textLine in splitText[0:10]):
+                    if (line.startswith("STATEMENTOFNETPOSITION") or line.endswith("STATEMENTOFNETPOSITION")) and not any(line.replace(' ', '').startswith("FIDUCIARYFUND") for line in splitText) and not any(textLine.replace(' ', '').startswith('RECONCILIATIONOF') for textLine in splitText[0:10]):
                         #If date has not been found yet
                         if not documentDate:
                             if len(dateFilter.findall(extractedText)):
@@ -158,12 +159,12 @@ def file_parse(file):
 
                         #If statement of net position is found, place the page in the corresponding list 
                         #Make sure the page is not a "notes to financial statements" page
-                        elif ("NOTES" in splitText[-1] or "NOTES" in splitText[-2] or "NOTES" in splitText[-3]) and not any(line.startswith("COMPONENT UNITS") for line in splitText):
+                        elif ("NOTES" in splitText[-1] or "NOTES" in splitText[-2] or "NOTES" in splitText[-3]) and not any(line.replace(' ', '').startswith("COMPONENTUNITS") for line in splitText):
                             statementOfNetPositionPages.append(page)
                             textFound = True
 
                     #Find statement of activities pages
-                    elif (line.startswith("STATEMENTOFACTIVITIES") or line.endswith("STATEMENTOFACTIVITIES")) and not any(textLine.replace(' ', '').strip().startswith('RECONCILIATIONOF') for textLine in splitText[0:10]):
+                    elif (line.startswith("STATEMENTOFACTIVITIES") or line.endswith("STATEMENTOFACTIVITIES")) and not any(textLine.replace(' ', '').startswith('RECONCILIATIONOF') for textLine in splitText[0:10]):
                         #Some formats (like Livingston County 2019) have the row titles on a previous page with no page header
                         if previousPageAdded:
                             previousPageAdded = False
@@ -176,14 +177,14 @@ def file_parse(file):
                         textFound = True
 
                     #Some formats have "balance sheet" and "governmental funds" on separate lines
-                    elif (line.startswith("BALANCESHEET") or line.endswith('BALANCESHEET')) and (any(findLine.replace(' ', '').startswith("GOVERNMENTALFUND") or findLine.replace(' ', '').endswith("GOVERNMENTALFUNDS") for findLine in splitText)) and not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]) and 'COMBINING' not in line:
+                    elif (line.startswith("BALANCESHEET") or line.endswith('BALANCESHEET')) and (any(findLine.replace(' ', '').startswith("GOVERNMENTALFUND") or findLine.endswith("GOVERNMENTALFUNDS") for findLine in splitText)) and not any(textLine.replace(' ', '').startswith('RECONCILIATIONOF') for textLine in splitText[0:10]) and 'COMBINING' not in line:
                         balanceSheetGovFundsPages.append(page)
                         #Some balance sheets extend to a second page, so get it just in case
                         balanceSheetFound = True
                         textFound = True
 
                     #Some formats have "statement of revenue", others have "statement of revenues" 
-                    elif  ("STATEMENTOFREVENUE" in line) and not any(textLine.replace(' ', '').strip().startswith('RECONCILIATIONOF') for textLine in splitText[0:10]) and 'COMBINING' not in line:
+                    elif  ("STATEMENTOFREVENUE" in line) and not any(textLine.replace(' ', '').startswith('RECONCILIATIONOF') for textLine in splitText[0:10]) and 'COMBINING' not in line:
                         #For statement of revenues, expenditures, and changes in fund balance - governmental funds
                         if "EXPENDITURES" in extractedText and "CHANGE" in extractedText and "FUND BALANCE" in extractedText and (any(line.replace(' ', '').startswith("GOVERNMENTALFUND") or line.replace(' ', '').endswith("GOVERNMENTALFUNDS") for line in splitText)):
                             statementOfRevExpendAndChangesGovernmentalFundsPages.append(page)
