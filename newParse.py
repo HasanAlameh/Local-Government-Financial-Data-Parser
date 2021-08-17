@@ -79,14 +79,14 @@ def file_parse(file):
                 if balanceSheetFound:
                     if 'SATEMENT OF REVENUE' in extractedText or 'TOTAL REVENUE' in extractedText:
                         statementOfRevExpendAndChangesGovernmentalFundsPages.append(page)
-                    elif "RECONCILIATION" not in extractedText[0:10]:
+                    elif not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]):
                         balanceSheetGovFundsPages.append(page)
                     previousPage = page
                     balanceSheetFound = False
                     continue
 
                 if statementOfRevGovFundsFound:
-                    if "RECONCILIATION" not in extractedText[0:10]:
+                    if not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]):
                         statementOfRevExpendAndChangesGovernmentalFundsPages.append(page)
                     previousPage = page
                     statementOfRevGovFundsFound = False
@@ -95,7 +95,7 @@ def file_parse(file):
                 if netPositionProprietaryFundsFound:
                     if 'STATEMENT OF REVENUE' in extractedText or 'OPERATING REVENUE' in extractedText:
                         statementOfRevExpAndChangesProprietaryFundsPages.append(page)
-                    elif ("RECONCILIATION" not in extractedText[0:10] and 'STATEMENT OF REVENUE' not in extractedText) or 'TOTAL CURRENT LIABILITIES' in extractedText:
+                    elif not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]) or 'TOTAL CURRENT LIABILITIES' in extractedText:
                         statementOfNetPositionProprietaryFunds.append(page)
                     previousPage = page
                     netPositionProprietaryFundsFound = False
@@ -104,7 +104,7 @@ def file_parse(file):
                 if statementOfActivitiesFound:
                     if 'BALANCE SHEET' in extractedText and 'GOVERNMENTAL FUNDS' in extractedText:
                         balanceSheetGovFundsPages.append(page)
-                    elif "RECONCILIATION" not in extractedText[0:10]:
+                    elif not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]):
                         statementOfActivitiesPages.append(page)
                     previousPage = page
                     statementOfActivitiesFound = False
@@ -112,20 +112,21 @@ def file_parse(file):
                     
 
                 if statementOfRevProprietaryFundsFound:
-                    if "RECONCILIATION" not in extractedText[0:10]:
+                    if not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]):
                         statementOfRevExpAndChangesProprietaryFundsPages.append(page)
                     previousPage = page
                     statementOfRevProprietaryFundsFound = False
                     continue
                 
                 #Skip table of contents pages
-                if "TABLE OF CONTENTS" in extractedText or any(line == "CONTENTS" for line in splitText) or 'RECONCILIATION OF' in extractedText[0:10] or ('MANAGEMENT' in extractedText and 'DISCUSSION' in extractedText and 'ANALYSIS' in extractedText):
+                if "TABLE OF CONTENTS" in extractedText or any(line == "CONTENTS" for line in splitText) or not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]) or ('MANAGEMENT' in extractedText and 'DISCUSSION' in extractedText and 'ANALYSIS' in extractedText):
                    continue
 
                 for line in splitText:
-                    line = line.strip()
+                    #Some formats have double spacing between words, this makes comparison work for those formats
+                    line = line.replace(' ', '')
                     #Find Statement of Net Position pages
-                    if (line.startswith("STATEMENT OF NET POSITION") or line.endswith("STATEMENT OF NET POSITION")) and not any(line.startswith("FIDUCIARY FUND") for line in splitText) and not any(textLine.startswith('RECONCILIATION OF') for textLine in splitText[0:10]):
+                    if (line.startswith("STATEMENTOFNETPOSITION") or line.endswith("STATEMENTOFNETPOSITION")) and not any(line.replace(' ', '').startswith("FIDUCIARYFUND") for line in splitText) and not any(textLine.replace(' ', '').strip().startswith('RECONCILIATIONOF') for textLine in splitText[0:10]):
                         #If date has not been found yet
                         if not documentDate:
                             if len(dateFilter.findall(extractedText)):
@@ -135,14 +136,14 @@ def file_parse(file):
                         if not municipalityName:
                             #Municipality name is always the first line of the page
                             if len(splitText[0]) > 3:
-                                municipalityName = splitText[0]  
+                                municipalityName = splitText[0].strip().replace(', MICHIGAN', '').replace(', Michigan', '')
                             else:
-                                municipalityName = splitText[1]
+                                municipalityName = splitText[1].strip().replace(', MICHIGAN', '').replace(', Michigan', '')
 
                         #If statement of net position - proprietary funds is found, place the page in the corresponding list
                         if "PROPRIETARY FUND" in extractedText:
                             #Make sure the page is not a "notes to financial statements" page
-                            if  not any(line.startswith("COMPONENT UNITS") for line in splitText):
+                            if  not any(line.replace(' ', '').startswith("COMPONENTUNITS") for line in splitText):
                                 #In some formats (like Detroit 2020), the row titles are on the previous page with no page header
                                 if previousPageAdded:
                                     previousPageAdded = False
@@ -162,7 +163,7 @@ def file_parse(file):
                             textFound = True
 
                     #Find statement of activities pages
-                    elif (line.startswith("STATEMENT OF ACTIVITIES") or line.endswith("STATEMENT OF ACTIVITIES")) and not any(textLine.startswith('RECONCILIATION OF') for textLine in splitText[0:10]):
+                    elif (line.startswith("STATEMENTOFACTIVITIES") or line.endswith("STATEMENTOFACTIVITIES")) and not any(textLine.replace(' ', '').strip().startswith('RECONCILIATIONOF') for textLine in splitText[0:10]):
                         #Some formats (like Livingston County 2019) have the row titles on a previous page with no page header
                         if previousPageAdded:
                             previousPageAdded = False
@@ -175,22 +176,22 @@ def file_parse(file):
                         textFound = True
 
                     #Some formats have "balance sheet" and "governmental funds" on separate lines
-                    elif (line.startswith("BALANCE SHEET") or line.endswith('BALANCE SHEET')) and (any(findLine.startswith("GOVERNMENTAL FUND") or findLine.endswith("GOVERNMENTAL FUNDS") for findLine in splitText)) and not any(textLine.startswith('RECONCILIATION OF') for textLine in splitText[0:10]) and 'COMBINING' not in line:
+                    elif (line.startswith("BALANCESHEET") or line.endswith('BALANCESHEET')) and (any(findLine.replace(' ', '').startswith("GOVERNMENTALFUND") or findLine.replace(' ', '').endswith("GOVERNMENTALFUNDS") for findLine in splitText)) and not any(textLine.strip().startswith('RECONCILIATION OF') for textLine in splitText[0:10]) and 'COMBINING' not in line:
                         balanceSheetGovFundsPages.append(page)
                         #Some balance sheets extend to a second page, so get it just in case
                         balanceSheetFound = True
                         textFound = True
 
                     #Some formats have "statement of revenue", others have "statement of revenues" 
-                    elif  ("STATEMENT OF REVENUE" in line) and not any(textLine.startswith('RECONCILIATION OF') for textLine in splitText[0:10]) and 'COMBINING' not in line:
+                    elif  ("STATEMENTOFREVENUE" in line) and not any(textLine.replace(' ', '').strip().startswith('RECONCILIATIONOF') for textLine in splitText[0:10]) and 'COMBINING' not in line:
                         #For statement of revenues, expenditures, and changes in fund balance - governmental funds
-                        if "EXPENDITURES" in extractedText and "CHANGE" in extractedText and "FUND BALANCE" in extractedText and (any(line.startswith("GOVERNMENTAL FUND") or line.endswith("GOVERNMENTAL FUNDS") for line in splitText)):
+                        if "EXPENDITURES" in extractedText and "CHANGE" in extractedText and "FUND BALANCE" in extractedText and (any(line.replace(' ', '').startswith("GOVERNMENTALFUND") or line.replace(' ', '').endswith("GOVERNMENTALFUNDS") for line in splitText)):
                             statementOfRevExpendAndChangesGovernmentalFundsPages.append(page)
                             #In case it extends to a second page
                             statementOfRevGovFundsFound = True
                             textFound = True
                         #For statement of revenues, expenses and changes in fund net position - proprietary funds
-                        elif "EXPENSES" in extractedText and "CHANGE" in extractedText and "NET POSITION" in extractedText and (any(line.startswith("PROPRIETARY FUND") or line.endswith("PROPRIETARY FUNDS") for line in splitText)):
+                        elif "EXPENSES" in extractedText and "CHANGE" in extractedText and "NET POSITION" in extractedText and (any(line.replace(' ', '').startswith("PROPRIETARYFUND") or line.replace(' ', '').endswith("PROPRIETARYFUNDS") for line in splitText)):
                             
                             if previousPageAdded:
                                 previousPageAdded = False
@@ -347,13 +348,13 @@ def cleanCombineRow(line, page_header = ""):
                     try:
                         formattedRow[index + 1] = formattedRow[index] + formattedRow[index + 1]
                         formattedRow.pop(index)
-                    except:
+                    except IndexError:
                         print('There was an error processing the following row:\n' + str(line))
                 else:
                     #Replace zeros with hyphens
                     try:
                         formattedRow[index] = '-'
-                    except:
+                    except IndexError:
                         print('There was an error processing the following row:\n' + str(line))
     
     #Do not place the values of pages under the columns of other pages
@@ -385,7 +386,7 @@ def cleanCombineRow(line, page_header = ""):
                 else:
                     formattedRow[5] = '-'
             del formattedRow[6:len(formattedRow)]
-        except:
+        except IndexError:
             print('There was an error processing the following row:\n' + str(line))
         formattedRow[4:4] = ['', '', '', '', '', '', '', '', '']
     #For these pages, we only need the Total column
@@ -419,7 +420,7 @@ def cleanCombineRow(line, page_header = ""):
                 else:
                     formattedRow[4] = '-'
             del formattedRow[5:len(formattedRow)]
-        except:
+        except IndexError:
             print('There was an error processing the following row:\n' + str(line))
         formattedRow[4:4] = ['', '', '', '', '', '', '', '', '', '', '']
              
@@ -853,7 +854,6 @@ def parseStoredPages():
 
         #If we moved to a new page and we have locations of lines stored, that means the totals column is on a separate page
         if linesLocations:
-            print(linesLocations)
             if totalsOnSamePage:
                 for line in splitText:
                     if not linesLocations:
