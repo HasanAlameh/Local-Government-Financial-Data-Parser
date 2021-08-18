@@ -57,7 +57,6 @@ def file_parse(file):
     
     #Read the PDF file
     with pdfplumber.open(file) as pdf:
-
         #Iterate through pages to find the headers we are interested in
         #Each header found gets added to its appropriate array
         for page in pdf.pages:
@@ -259,6 +258,22 @@ def file_parse(file):
             print("----------------------------------------------------------------------------")
             print(textFromPage)
         """
+        with open('output.csv', 'r+', newline='') as outputFile:
+            reader = csv.reader(outputFile)
+            writer = csv.writer(outputFile)
+            try:
+                csvHeaders = next(reader)
+                if not csvHeaders[0].startswith('DATE'):
+                    print('CSV file has no headers. Adding headers...')
+                    outputFile.seek(0)
+                    writer.writerow(['DATE','COUNTY','PAGE','DATA TITLE','EXPENSES','CHARGES FOR SERVICES','OPERATING GRANTS & CONTRIBUTIONS','CAPITAL GRANTS & CONTRIBUTIONS','Net (EXPENSE) REVENUE','GOVERNMENTAL ACTIVITIES','BUSINESS-TYPE ACTIVITY','TOTAL','COMPONENT UNITS','GENERAL FUND','TOTAL GOVERNMENTAL FUNDS','TOTAL ENTERPRISE FUNDS'])
+                    outputFile.close()
+            except (StopIteration, IndexError) as err:
+                print('CSV file has no headers. Adding headers...')
+                outputFile.seek(0)
+                writer.writerow(['DATE','COUNTY','PAGE','DATA TITLE','EXPENSES','CHARGES FOR SERVICES','OPERATING GRANTS & CONTRIBUTIONS','CAPITAL GRANTS & CONTRIBUTIONS','Net (EXPENSE) REVENUE','GOVERNMENTAL ACTIVITIES','BUSINESS-TYPE ACTIVITY','TOTAL','COMPONENT UNITS','GENERAL FUND','TOTAL GOVERNMENTAL FUNDS','TOTAL ENTERPRISE FUNDS'])
+                outputFile.close()
+            
         parseStoredPages()
         
         #Log: Display parse completion message
