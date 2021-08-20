@@ -258,22 +258,27 @@ def file_parse(file):
             print("----------------------------------------------------------------------------")
             print(textFromPage)
         """
-        with open('output.csv', 'r+', newline='') as outputFile:
-            reader = csv.reader(outputFile)
-            writer = csv.writer(outputFile)
-            try:
-                csvHeaders = next(reader)
-                if not csvHeaders[0].startswith('DATE'):
+        try:
+            with open('output.csv', 'r+', newline='') as outputFile:
+                reader = csv.reader(outputFile)
+                writer = csv.writer(outputFile)
+                try:
+                    csvHeaders = next(reader)
+                    if not csvHeaders[0].startswith('DATE'):
+                        print('CSV file has no headers. Adding headers...')
+                        outputFile.seek(0)
+                        writer.writerow(['DATE','COUNTY','PAGE','DATA TITLE','EXPENSES','CHARGES FOR SERVICES','OPERATING GRANTS & CONTRIBUTIONS','CAPITAL GRANTS & CONTRIBUTIONS','Net (EXPENSE) REVENUE','GOVERNMENTAL ACTIVITIES','BUSINESS-TYPE ACTIVITY','TOTAL','COMPONENT UNITS','GENERAL FUND','TOTAL GOVERNMENTAL FUNDS','TOTAL ENTERPRISE FUNDS'])
+                        outputFile.close()
+                except (StopIteration, IndexError) as err:
                     print('CSV file has no headers. Adding headers...')
                     outputFile.seek(0)
                     writer.writerow(['DATE','COUNTY','PAGE','DATA TITLE','EXPENSES','CHARGES FOR SERVICES','OPERATING GRANTS & CONTRIBUTIONS','CAPITAL GRANTS & CONTRIBUTIONS','Net (EXPENSE) REVENUE','GOVERNMENTAL ACTIVITIES','BUSINESS-TYPE ACTIVITY','TOTAL','COMPONENT UNITS','GENERAL FUND','TOTAL GOVERNMENTAL FUNDS','TOTAL ENTERPRISE FUNDS'])
                     outputFile.close()
-            except (StopIteration, IndexError) as err:
-                print('CSV file has no headers. Adding headers...')
-                outputFile.seek(0)
+        except FileNotFoundError:
+            with open('output.csv', 'a', newline='') as outputFile:
+                writer = csv.writer(outputFile)
                 writer.writerow(['DATE','COUNTY','PAGE','DATA TITLE','EXPENSES','CHARGES FOR SERVICES','OPERATING GRANTS & CONTRIBUTIONS','CAPITAL GRANTS & CONTRIBUTIONS','Net (EXPENSE) REVENUE','GOVERNMENTAL ACTIVITIES','BUSINESS-TYPE ACTIVITY','TOTAL','COMPONENT UNITS','GENERAL FUND','TOTAL GOVERNMENTAL FUNDS','TOTAL ENTERPRISE FUNDS'])
                 outputFile.close()
-            
         parseStoredPages()
         
         #Log: Display parse completion message
